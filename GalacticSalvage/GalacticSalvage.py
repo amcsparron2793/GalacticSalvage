@@ -8,7 +8,8 @@ Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
 import pygame
-from typing import Tuple
+from typing import Tuple, List
+import random
 
 
 # Initialize Pygame
@@ -48,10 +49,10 @@ class Player:
 
 
 class Projectile:
-    def __init__(self, x, y):
+    def __init__(self, x, y, color: Tuple[int, int, int] = (255, 0, 0)):
         self.width = 5
         self.height = 15
-        self.color = (255, 0, 0)
+        self.color = color
         self.x = x
         self.y = y
         self.speed = 7
@@ -60,12 +61,64 @@ class Projectile:
         self.y -= self.speed
 
 
+class Asteroid:
+    def __init__(self):
+        self.width = random.randint(20, 50)
+        self.height = random.randint(20, 50)
+        self.color = (150, 150, 150)
+        self.x = random.randint(0, Settings.SCREEN_WIDTH - self.width)
+        self.y = -self.height  # Start above the screen
+        self.speed = random.randint(1, 3)
+
+    def move(self):
+        self.y += self.speed
+
+
+def _UpdateBulletProjectiles(projectiles: List[Projectile]):
+    # Update projectiles
+    for projectile in projectiles:
+        projectile.move()
+        pygame.draw.rect(Settings.screen, projectile.color,
+                         (projectile.x, projectile.y,
+                          projectile.width, projectile.height))
+        # Remove projectiles that go off-screen
+        if projectile.y < 0:
+            projectiles.remove(projectile)
+    return projectiles
+
+
+def _UpdateAsteroids(asteroids: List[Asteroid]):
+    # Update asteroids
+    for asteroid in asteroids:
+        asteroid.move()
+        pygame.draw.rect(Settings.screen, asteroid.color, (asteroid.x, asteroid.y, asteroid.width, asteroid.height))
+        # Remove asteroids that go off-screen
+        if asteroid.y > Settings.SCREEN_HEIGHT:
+            asteroids.remove(asteroid)
+    return asteroids
+
+
+def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid]):
+    for projectile in projectiles:
+        projectile_rect = pygame.Rect(projectile.x, projectile.y, projectile.width, projectile.height)
+        for asteroid in asteroids:
+            asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
+            if projectile_rect.colliderect(asteroid_rect):
+                # Remove the projectile and asteroid
+                projectiles.remove(projectile)
+                asteroids.remove(asteroid)
+                # Break out of the inner loop since projectile can only collide with one asteroid at a time
+                break
+    return projectiles, asteroids
+
+
 def run_game():
     running = True
     clock = pygame.time.Clock()
 
     player = Player()
     projectiles = []
+    asteroids = []
 
     while running:
         Settings.screen.fill(BLACK)
@@ -93,16 +146,17 @@ def run_game():
             projectiles.append(Projectile(projectile_x, projectile_y))
             player.cooldown_counter = player.projectile_cooldown
 
+        # Generate asteroids randomly
+        if random.randint(1, 100) == 1:
+            asteroids.append(Asteroid())
+
         if player.cooldown_counter > 0:
             player.cooldown_counter -= 1
 
-        # Update projectiles
-        for projectile in projectiles:
-            projectile.move()
-            pygame.draw.rect(Settings.screen, projectile.color, (projectile.x, projectile.y, projectile.width, projectile.height))
-            # Remove projectiles that go off-screen
-            if projectile.y < 0:
-                projectiles.remove(projectile)
+        projectiles = _UpdateBulletProjectiles(projectiles)
+        asteroids = _UpdateAsteroids(asteroids)
+
+        projectiles, asteroids, = _CheckCollisions(projectiles, asteroids)
 
         # Draw player
         pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
