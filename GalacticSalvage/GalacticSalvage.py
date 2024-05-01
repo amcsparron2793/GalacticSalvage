@@ -69,9 +69,22 @@ class Asteroid:
         self.x = random.randint(0, Settings.SCREEN_WIDTH - self.width)
         self.y = -self.height  # Start above the screen
         self.speed = random.randint(1, 3)
+        self.angle = 0
+        self.rotation_speed = random.uniform(-0.5, 0.5)  # Random rotation speed
 
     def move(self):
         self.y += self.speed
+        self.angle += self.rotation_speed
+
+    def draw(self, screen):
+        # Create a surface for the asteroid and rotate it
+        asteroid_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        pygame.draw.rect(asteroid_surface, self.color, (0, 0, self.width, self.height))
+        rotated_surface = pygame.transform.rotate(asteroid_surface, self.angle)
+        # Get the rect of the rotated surface and set its center to the asteroid's position
+        rotated_rect = rotated_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
+        # Draw the rotated surface onto the screen
+        screen.blit(rotated_surface, rotated_rect)
 
 
 def _UpdateBulletProjectiles(projectiles: List[Projectile]):
@@ -91,18 +104,30 @@ def _UpdateAsteroids(asteroids: List[Asteroid]):
     # Update asteroids
     for asteroid in asteroids:
         asteroid.move()
-        pygame.draw.rect(Settings.screen, asteroid.color, (asteroid.x, asteroid.y, asteroid.width, asteroid.height))
+        asteroid.draw(Settings.screen)  # Draw the asteroid with rotation
         # Remove asteroids that go off-screen
         if asteroid.y > Settings.SCREEN_HEIGHT:
             asteroids.remove(asteroid)
     return asteroids
 
 
-def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid]):
+def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], player: Player):
+    player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+    for asteroid in asteroids:
+        # create a hit box around the asteroid
+        asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
+        # if the two hit boxes collide, then remove the projectile and the asteroid
+        if player_rect.colliderect(asteroid_rect):
+            # Remove the projectile and asteroid
+            return 'q', 'q'
+
     for projectile in projectiles:
+        # create a hit box around the bullet
         projectile_rect = pygame.Rect(projectile.x, projectile.y, projectile.width, projectile.height)
         for asteroid in asteroids:
+            # create a hit box around the asteroid
             asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
+            # if the two hit boxes collide, then remove the projectile and the asteroid
             if projectile_rect.colliderect(asteroid_rect):
                 # Remove the projectile and asteroid
                 projectiles.remove(projectile)
@@ -116,7 +141,7 @@ def run_game():
     running = True
     clock = pygame.time.Clock()
 
-    player = Player()
+    player = Player(projectile_cooldown=15)
     projectiles = []
     asteroids = []
 
@@ -156,7 +181,9 @@ def run_game():
         projectiles = _UpdateBulletProjectiles(projectiles)
         asteroids = _UpdateAsteroids(asteroids)
 
-        projectiles, asteroids, = _CheckCollisions(projectiles, asteroids)
+        projectiles, asteroids, = _CheckCollisions(projectiles, asteroids, player)
+        if projectiles == 'q' or asteroids == 'q':
+            running = False
 
         # Draw player
         pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
