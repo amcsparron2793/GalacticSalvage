@@ -2,7 +2,10 @@
 """
 GalacticSalvage
 
-Players control a spaceship tasked with salvaging valuable resources from abandoned space stations and derelict ships. Navigate through asteroid fields, avoid enemy patrols, and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
+Players control a spaceship tasked with salvaging valuable resources
+from abandoned space stations and derelict ships.
+Navigate through asteroid fields, avoid enemy patrols,
+and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
 import pygame
 from typing import Tuple
@@ -11,15 +14,17 @@ from typing import Tuple
 # Initialize Pygame
 pygame.init()
 
-# Set up the screen dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Galactic Salvage")
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+
+
+class Settings:
+    # Set up the screen dimensions
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Galactic Salvage")
 
 
 class Player:
@@ -27,8 +32,8 @@ class Player:
         self.width = 50
         self.height = 50
         self.color = color
-        self.x = SCREEN_WIDTH // 2 - self.width // 2
-        self.y = SCREEN_HEIGHT - self.height - 20
+        self.x = Settings.SCREEN_WIDTH // 2 - self.width // 2
+        self.y = Settings.SCREEN_HEIGHT - self.height - 20
         self.speed = 5
         self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
         self.cooldown_counter = 0
@@ -38,7 +43,7 @@ class Player:
             self.x -= self.speed
 
     def move_right(self):
-        if self.x < SCREEN_WIDTH - self.width:
+        if self.x < Settings.SCREEN_WIDTH - self.width:
             self.x += self.speed
 
 
@@ -63,7 +68,7 @@ def run_game():
     projectiles = []
 
     while running:
-        screen.fill(BLACK)
+        Settings.screen.fill(BLACK)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,13 +99,13 @@ def run_game():
         # Update projectiles
         for projectile in projectiles:
             projectile.move()
-            pygame.draw.rect(screen, projectile.color, (projectile.x, projectile.y, projectile.width, projectile.height))
+            pygame.draw.rect(Settings.screen, projectile.color, (projectile.x, projectile.y, projectile.width, projectile.height))
             # Remove projectiles that go off-screen
             if projectile.y < 0:
                 projectiles.remove(projectile)
 
         # Draw player
-        pygame.draw.rect(screen, player.color, (player.x, player.y, player.width, player.height))
+        pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
 
         # Update the display
         pygame.display.update()
