@@ -89,23 +89,25 @@ class Asteroid:
         screen.blit(rotated_surface, rotated_rect)
 
 
-class Star(object):
+class Star:
     def __init__(self):
         self.color = WHITE
         self.radius = 1
-        self.x = random.randint(0, Settings.SCREEN_WIDTH - self.width)
-        self.y = -self.height  # Start above the screen
+        # why does this need to be // 7+ to fill the whole screen?
+        self.x = random.randint(0, Settings.SCREEN_WIDTH - Settings.SCREEN_HEIGHT // 7)
+        self.y = -Settings.SCREEN_HEIGHT  # Start above the screen
         self.yspeed = random.randint(1, 3)
 
     def draw(self):
-        pygame.draw.circle(screen, self.colour, (self.x, self.y), self.radius)
+        pygame.draw.circle(Settings.screen, self.color, (self.x, self.y), self.radius)
 
     def fall(self):
         self.y += self.yspeed
 
     def check_if_i_should_reappear_on_top(self):
-        if self.y >= HEIGHT:
+        if self.y >= Settings.SCREEN_HEIGHT:
             self.y = 0
+
 
 def _UpdateBulletProjectiles(projectiles: List[Projectile]):
     # Update projectiles
@@ -129,6 +131,7 @@ def _UpdateAsteroids(asteroids: List[Asteroid]):
         if asteroid.y > Settings.SCREEN_HEIGHT:
             asteroids.remove(asteroid)
     return asteroids
+
 
 def _UpdateStars(stars: List[Star]):
     for star in stars:
@@ -204,8 +207,9 @@ def run_game():
             asteroids.append(Asteroid())
         
         # Generate stars randomly
-        if random.randint(1,100) == 1:
+        if random.randint(1, 10) == 1:
             stars.append(Star())
+
         # deincrement the cooldown counter by 1 if it is greater than 0
         if player.cooldown_counter > 0:
             player.cooldown_counter -= 1
