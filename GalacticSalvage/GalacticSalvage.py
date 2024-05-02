@@ -38,6 +38,7 @@ class Player:
         self.speed = 5
         self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
         self.cooldown_counter = 0
+        # TODO: add score var etc.
 
     def move_left(self):
         if self.x > 0:
@@ -80,6 +81,7 @@ class Asteroid:
         # Create a surface for the asteroid and rotate it
         asteroid_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         pygame.draw.rect(asteroid_surface, self.color, (0, 0, self.width, self.height))
+        # pygame.draw.polygon(asteroid_surface, self.color, (polys), self.width)#, self.height))
         rotated_surface = pygame.transform.rotate(asteroid_surface, self.angle)
         # Get the rect of the rotated surface and set its center to the asteroid's position
         rotated_rect = rotated_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
