@@ -38,6 +38,8 @@ class Player:
         self.speed = 5
         self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
         self.cooldown_counter = 0
+        self.blaster = pygame.mixer.Sound('../Misc_Project_Files/blaster.mp3')
+        self.boom = pygame.mixer.Sound('../Misc_Project_Files/BoomPlayer.mp3')
         # TODO: add score var etc.
 
     def move_left(self):
@@ -72,6 +74,7 @@ class Asteroid:
         self.speed = random.randint(1, 3)
         self.angle = 0
         self.rotation_speed = random.uniform(-0.5, 0.5)  # Random rotation speed
+        self.boom = pygame.mixer.Sound('../Misc_Project_Files/BoomAsteroid.mp3')
 
     def move(self):
         self.y += self.speed
@@ -120,8 +123,11 @@ def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], p
         asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
         # if the two hit boxes collide, then remove the projectile and the asteroid
         if player_rect.colliderect(asteroid_rect):
-            # Remove the projectile and asteroid
+            mx = player.boom.play()
+            while mx.get_busy():
+                pass
             return 'q', 'q'
+        # TODO: background music?
 
     for projectile in projectiles:
         # create a hit box around the bullet
@@ -131,6 +137,7 @@ def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], p
             asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
             # if the two hit boxes collide, then remove the projectile and the asteroid
             if projectile_rect.colliderect(asteroid_rect):
+                asteroid.boom.play()
                 # Remove the projectile and asteroid
                 projectiles.remove(projectile)
                 asteroids.remove(asteroid)
@@ -170,6 +177,7 @@ def run_game():
             # Fire projectile
             projectile_x = player.x + player.width // 2 - 2  # Adjusted for projectile width
             projectile_y = player.y
+            player.blaster.play()
             projectiles.append(Projectile(projectile_x, projectile_y))
             player.cooldown_counter = player.projectile_cooldown
 
