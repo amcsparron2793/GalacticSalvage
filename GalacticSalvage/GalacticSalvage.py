@@ -29,7 +29,7 @@ class Settings:
 
 
 class Player:
-    def __init__(self, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 30):
+    def __init__(self, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 15):
         self.width = 50
         self.height = 50
         self.color = color
@@ -38,8 +38,8 @@ class Player:
         self.speed = 5
         self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
         self.cooldown_counter = 0
-        self.blaster = pygame.mixer.Sound('../Misc_Project_Files/blaster.mp3')
-        self.boom = pygame.mixer.Sound('../Misc_Project_Files/BoomPlayer.mp3')
+        self.blaster = pygame.mixer.Sound('../Misc_Project_Files/sounds/blaster.mp3')
+        self.boom = pygame.mixer.Sound('../Misc_Project_Files/sounds/BoomPlayer.mp3')
         # TODO: add score var etc.
 
     def move_left(self):
@@ -74,7 +74,7 @@ class Asteroid:
         self.speed = random.randint(1, 3)
         self.angle = 0
         self.rotation_speed = random.uniform(-0.5, 0.5)  # Random rotation speed
-        self.boom = pygame.mixer.Sound('../Misc_Project_Files/BoomAsteroid.mp3')
+        self.boom = pygame.mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
 
     def move(self):
         self.y += self.speed
@@ -150,7 +150,7 @@ def run_game():
     running = True
     clock = pygame.time.Clock()
 
-    player = Player(projectile_cooldown=15)
+    player = Player()
     projectiles = []
     asteroids = []
 
