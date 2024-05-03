@@ -10,6 +10,9 @@ and use a variety of retro-inspired weapons and upgrades to fend off hostile for
 import pygame
 from typing import Tuple, List
 import random
+from Player import Player
+from Asteroid import Asteroid
+from Settings import Settings
 
 
 # Initialize Pygame
@@ -18,37 +21,6 @@ pygame.init()
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-
-
-class Settings:
-    # Set up the screen dimensions
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 600
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Galactic Salvage")
-
-
-class Player:
-    def __init__(self, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 15):
-        self.width = 50
-        self.height = 50
-        self.color = color
-        self.x = Settings.SCREEN_WIDTH // 2 - self.width // 2
-        self.y = Settings.SCREEN_HEIGHT - self.height - 20
-        self.speed = 5
-        self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
-        self.cooldown_counter = 0
-        self.blaster = pygame.mixer.Sound('../Misc_Project_Files/sounds/blaster.mp3')
-        self.boom = pygame.mixer.Sound('../Misc_Project_Files/sounds/BoomPlayer.mp3')
-        # TODO: add score var etc.
-
-    def move_left(self):
-        if self.x > 0:
-            self.x -= self.speed
-
-    def move_right(self):
-        if self.x < Settings.SCREEN_WIDTH - self.width:
-            self.x += self.speed
 
 
 class Projectile:
@@ -62,34 +34,6 @@ class Projectile:
 
     def move(self):
         self.y -= self.speed
-
-
-class Asteroid:
-    def __init__(self):
-        self.width = random.randint(20, 50)
-        self.height = random.randint(20, 50)
-        self.color = (150, 150, 150)
-        self.x = random.randint(0, Settings.SCREEN_WIDTH - self.width)
-        self.y = -self.height  # Start above the screen
-        self.speed = random.randint(1, 3)
-        self.angle = 0
-        self.rotation_speed = random.uniform(-0.5, 0.5)  # Random rotation speed
-        self.boom = pygame.mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
-
-    def move(self):
-        self.y += self.speed
-        self.angle += self.rotation_speed
-
-    def draw(self, screen):
-        # Create a surface for the asteroid and rotate it
-        asteroid_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        pygame.draw.rect(asteroid_surface, self.color, (0, 0, self.width, self.height))
-        # pygame.draw.polygon(asteroid_surface, self.color, (polys), self.width)#, self.height))
-        rotated_surface = pygame.transform.rotate(asteroid_surface, self.angle)
-        # Get the rect of the rotated surface and set its center to the asteroid's position
-        rotated_rect = rotated_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
-        # Draw the rotated surface onto the screen
-        screen.blit(rotated_surface, rotated_rect)
 
 
 class Star:
