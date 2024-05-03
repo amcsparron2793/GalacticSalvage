@@ -10,6 +10,7 @@ and use a variety of retro-inspired weapons and upgrades to fend off hostile for
 import pygame
 from typing import Tuple, List
 import random
+from Player import Player
 
 
 # Initialize Pygame
