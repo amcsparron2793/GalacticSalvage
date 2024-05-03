@@ -12,6 +12,7 @@ from typing import Tuple, List
 import random
 from Player import Player
 from Asteroid import Asteroid
+from Settings import Settings
 
 
 # Initialize Pygame
@@ -21,14 +22,6 @@ pygame.init()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-
-class Settings:
-    # Set up the screen dimensions
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 600
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Galactic Salvage")
-    
 
 class Projectile:
     def __init__(self, x, y, color: Tuple[int, int, int] = (255, 0, 0)):
