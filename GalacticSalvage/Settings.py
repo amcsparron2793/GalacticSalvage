@@ -5,6 +5,7 @@ class Sounds:
     def __init__(self):
         self.blaster_sound = mixer.Sound('../Misc_Project_Files/sounds/blaster.mp3')
         self.boom_sound = mixer.Sound('../Misc_Project_Files/sounds/BoomPlayer.mp3')
+        self.missed_asteroid_sound = mixer.Sound('../Misc_Project_Files/sounds/MissedAsteroid.mp3')
 
 
 class Settings:

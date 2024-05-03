@@ -79,7 +79,8 @@ class GalacticSalvage:
             # Remove asteroids that go off-screen
             if asteroid.y > Settings.SCREEN_HEIGHT:
                 self.asteroids.remove(asteroid)
-                # TODO: add a score penalty if an asteroid
+                self.sounds.missed_asteroid_sound.play()
+                self.scoreboard.decrease_score()
         return self.asteroids
 
     def _UpdateStars(self):
@@ -97,8 +98,9 @@ class GalacticSalvage:
             # if the two hit boxes collide, then remove the projectile and the asteroid
             if player_rect.colliderect(asteroid_rect):
                 mx = self.sounds.boom_sound.play()
-                while mx.get_busy():
-                    pass
+                if mx:
+                    while mx.get_busy():
+                        pass
                 self.running = False
             # TODO: background music?
 
