@@ -107,7 +107,7 @@ class Star:
     def fall(self):
         self.y += self.yspeed
 
-    def check_if_i_should_reappear_on_top(self):
+    def OffscreenReset(self):
         if self.y >= Settings.SCREEN_HEIGHT:
             self.y = 0
 
@@ -140,7 +140,7 @@ def _UpdateStars(stars: List[Star]):
     for star in stars:
         star.draw()
         star.fall()
-        star.check_if_i_should_reappear_on_top()
+        star.OffscreenReset()
     return stars
 
 
