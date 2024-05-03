@@ -28,6 +28,29 @@ class Settings:
     pygame.display.set_caption("Galactic Salvage")
 
 
+class Scoreboard:
+    def __init__(self, font_size=30):
+        self.score = 0
+        self.font = pygame.font.SysFont(None, font_size)
+        self.color = WHITE
+
+    def increase_score(self, amount=1):
+        self.score += amount
+
+    def decrease_score(self, amount=1):
+        if self.score > 0:
+            self.score -= amount
+        else:
+            pass
+
+    def reset_score(self):
+        self.score = 0
+
+    def display(self, screen):
+        score_text = self.font.render("Score: " + str(self.score), True, self.color)
+        screen.blit(score_text, (10, 10))
+
+
 class Player:
     def __init__(self, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 15):
         self.width = 50
@@ -133,6 +156,7 @@ def _UpdateAsteroids(asteroids: List[Asteroid]):
         # Remove asteroids that go off-screen
         if asteroid.y > Settings.SCREEN_HEIGHT:
             asteroids.remove(asteroid)
+            # TODO: add a score penalty if an asteroid
     return asteroids
 
 
@@ -144,7 +168,8 @@ def _UpdateStars(stars: List[Star]):
     return stars
 
 
-def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], player: Player):
+def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid],
+                     player: Player, scoreboard: Scoreboard):
     player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
     for asteroid in asteroids:
         # create a hit box around the asteroid
@@ -154,7 +179,7 @@ def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], p
             mx = player.boom.play()
             while mx.get_busy():
                 pass
-            return 'q', 'q'
+            return 'q', 'q', 'q'
         # TODO: background music?
 
     for projectile in projectiles:
@@ -165,13 +190,14 @@ def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid], p
             asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
             # if the two hit boxes collide, then remove the projectile and the asteroid
             if projectile_rect.colliderect(asteroid_rect):
+                scoreboard.increase_score()
                 asteroid.boom.play()
                 # Remove the projectile and asteroid
                 projectiles.remove(projectile)
                 asteroids.remove(asteroid)
                 # Break out of the inner loop since projectile can only collide with one asteroid at a time
                 break
-    return projectiles, asteroids
+    return projectiles, asteroids, scoreboard
 
 
 def run_game():
@@ -182,6 +208,7 @@ def run_game():
     projectiles = []
     asteroids = []
     stars = []
+    scoreboard = Scoreboard()
 
     while running:
         Settings.screen.fill(BLACK)
@@ -226,9 +253,11 @@ def run_game():
         asteroids = _UpdateAsteroids(asteroids)
         stars = _UpdateStars(stars)
 
-        projectiles, asteroids, = _CheckCollisions(projectiles, asteroids, player)
+        projectiles, asteroids, scoreboard = _CheckCollisions(projectiles, asteroids, player, scoreboard)
         if projectiles == 'q' or asteroids == 'q':
             running = False
+        # Update the scoreboard
+        scoreboard.display(Settings.screen)
 
         # Draw player
         pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
