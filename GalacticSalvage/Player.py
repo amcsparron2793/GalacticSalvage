@@ -1,6 +1,18 @@
 from typing import Tuple
-from pygame import mixer
 from Settings import Settings
+
+
+class Projectile:
+    def __init__(self, x, y, color: Tuple[int, int, int] = (255, 0, 0)):
+        self.width = 5
+        self.height = 15
+        self.color = color
+        self.x = x
+        self.y = y
+        self.speed = 7
+
+    def move(self):
+        self.y -= self.speed
 
 
 class Player:
@@ -13,9 +25,6 @@ class Player:
         self.speed = 5
         self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
         self.cooldown_counter = 0
-        self.blaster = mixer.Sound('../Misc_Project_Files/sounds/blaster.mp3')
-        self.boom = mixer.Sound('../Misc_Project_Files/sounds/BoomPlayer.mp3')
-        # TODO: add score var etc.
 
     def move_left(self):
         if self.x > 0:

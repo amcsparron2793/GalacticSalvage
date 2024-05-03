@@ -8,28 +8,12 @@ Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
 import pygame
-from typing import Tuple, List
+from typing import List
 import random
-from Player import Player
+from Player import Player, Projectile
 from Asteroid import Asteroid
 from Scoreboard import Scoreboard
-from Settings import Settings
-
-# Initialize Pygame
-pygame.init()
-
-
-class Projectile:
-    def __init__(self, x, y, color: Tuple[int, int, int] = (255, 0, 0)):
-        self.width = 5
-        self.height = 15
-        self.color = color
-        self.x = x
-        self.y = y
-        self.speed = 7
-
-    def move(self):
-        self.y -= self.speed
+from Settings import Settings, Sounds
 
 
 class Star:
@@ -37,7 +21,7 @@ class Star:
         self.color = Settings.WHITE
         self.radius = 1
         # why does this need to be // 7+ to fill the whole screen?
-        self.x = random.randint(0, Settings.SCREEN_WIDTH - Settings.SCREEN_HEIGHT // 7)
+        self.x = random.randint(0, Settings.SCREEN_WIDTH - Settings.SCREEN_HEIGHT // 15)
         self.y = -Settings.SCREEN_HEIGHT  # Start above the screen
         self.yspeed = random.randint(1, 3)
 
@@ -52,141 +36,143 @@ class Star:
             self.y = 0
 
 
-def _UpdateBulletProjectiles(projectiles: List[Projectile]):
-    # Update projectiles
-    for projectile in projectiles:
-        projectile.move()
-        pygame.draw.rect(Settings.screen, projectile.color,
-                         (projectile.x, projectile.y,
-                          projectile.width, projectile.height))
-        # Remove projectiles that go off-screen
-        if projectile.y < 0:
-            projectiles.remove(projectile)
-    return projectiles
+class GalacticSalvage:
+    clock = pygame.time.Clock()
 
+    def __init__(self):
+        # Initialize Pygame
+        pygame.init()
 
-def _UpdateAsteroids(asteroids: List[Asteroid]):
-    # Update asteroids
-    for asteroid in asteroids:
-        asteroid.move()
-        asteroid.draw(Settings.screen)  # Draw the asteroid with rotation
-        # Remove asteroids that go off-screen
-        if asteroid.y > Settings.SCREEN_HEIGHT:
-            asteroids.remove(asteroid)
-            # TODO: add a score penalty if an asteroid
-    return asteroids
+        self.running = True
+        self.player = Player()
+        self.projectiles: List[Projectile] = []
+        self.asteroids: List[Asteroid] = []
+        self.stars: List[Star] = []
+        self.scoreboard = Scoreboard()
+        self.sounds = Sounds()
 
+    def FireWeapon(self):
+        # Fire projectile
+        projectile_x = self.player.x + self.player.width // 2 - 2  # Adjusted for projectile width
+        projectile_y = self.player.y
+        self.sounds.blaster_sound.play()
+        self.projectiles.append(Projectile(projectile_x, projectile_y))
+        self.player.cooldown_counter = self.player.projectile_cooldown
 
-def _UpdateStars(stars: List[Star]):
-    for star in stars:
-        star.draw()
-        star.fall()
-        star.OffscreenReset()
-    return stars
+    def _UpdateBulletProjectiles(self):
+        # Update projectiles
+        for projectile in self.projectiles:
+            projectile.move()
+            pygame.draw.rect(Settings.screen, projectile.color,
+                             (projectile.x, projectile.y,
+                              projectile.width, projectile.height))
+            # Remove projectiles that go off-screen
+            if projectile.y < 0:
+                self.projectiles.remove(projectile)
+        return self.projectiles
 
+    def _UpdateAsteroids(self):
+        # Update asteroids
+        for asteroid in self.asteroids:
+            asteroid.move()
+            asteroid.draw(Settings.screen)  # Draw the asteroid with rotation
+            # Remove asteroids that go off-screen
+            if asteroid.y > Settings.SCREEN_HEIGHT:
+                self.asteroids.remove(asteroid)
+                # TODO: add a score penalty if an asteroid
+        return self.asteroids
 
-def _CheckCollisions(projectiles: List[Projectile], asteroids: List[Asteroid],
-                     player: Player, scoreboard: Scoreboard):
-    player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
-    for asteroid in asteroids:
-        # create a hit box around the asteroid
-        asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
-        # if the two hit boxes collide, then remove the projectile and the asteroid
-        if player_rect.colliderect(asteroid_rect):
-            mx = player.boom.play()
-            while mx.get_busy():
-                pass
-            return 'q', 'q', 'q'
-        # TODO: background music?
+    def _UpdateStars(self):
+        for star in self.stars:
+            star.draw()
+            star.fall()
+            star.OffscreenReset()
+        return self.stars
 
-    for projectile in projectiles:
-        # create a hit box around the bullet
-        projectile_rect = pygame.Rect(projectile.x, projectile.y, projectile.width, projectile.height)
-        for asteroid in asteroids:
+    def _CheckCollisions(self):
+        player_rect = pygame.Rect(self.player.x, self.player.y, self.player.width, self.player.height)
+        for asteroid in self.asteroids:
             # create a hit box around the asteroid
             asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
             # if the two hit boxes collide, then remove the projectile and the asteroid
-            if projectile_rect.colliderect(asteroid_rect):
-                scoreboard.increase_score()
-                asteroid.boom.play()
-                # Remove the projectile and asteroid
-                projectiles.remove(projectile)
-                asteroids.remove(asteroid)
-                # Break out of the inner loop since projectile can only collide with one asteroid at a time
+            if player_rect.colliderect(asteroid_rect):
+                mx = self.sounds.boom_sound.play()
+                while mx.get_busy():
+                    pass
+                self.running = False
+            # TODO: background music?
+
+        for projectile in self.projectiles:
+            # create a hit box around the bullet
+            projectile_rect = pygame.Rect(projectile.x, projectile.y, projectile.width, projectile.height)
+            for asteroid in self.asteroids:
+                # create a hit box around the asteroid
+                asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
+                # if the two hit boxes collide, then remove the projectile and the asteroid
+                if projectile_rect.colliderect(asteroid_rect):
+                    self.scoreboard.increase_score()
+                    asteroid.boom.play()
+                    # Remove the projectile and asteroid
+                    self.projectiles.remove(projectile)
+                    self.asteroids.remove(asteroid)
+                    # Break out of the inner loop since projectile can only collide with one asteroid at a time
+                    break
+        return self.projectiles, self.asteroids, self.scoreboard
+
+    def GameLoop(self):
+        while self.running:
+            Settings.screen.fill(Settings.BLACK)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_ESCAPE]:
                 break
-    return projectiles, asteroids, scoreboard
 
+            if keys[pygame.K_LEFT]:
+                self.player.move_left()
 
-def run_game():
-    running = True
-    clock = pygame.time.Clock()
+            if keys[pygame.K_RIGHT]:
+                self.player.move_right()
 
-    player = Player()
-    projectiles = []
-    asteroids = []
-    stars = []
-    scoreboard = Scoreboard()
+            # Check if spacebar is pressed to shoot
+            if keys[pygame.K_SPACE] and self.player.cooldown_counter <= 0:
+                self.FireWeapon()
 
-    while running:
-        Settings.screen.fill(Settings.BLACK)
+            # Generate asteroids randomly
+            if random.randint(1, 100) == 1:
+                self.asteroids.append(Asteroid())
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            # Generate stars randomly
+            if random.randint(1, 10) == 1:
+                self.stars.append(Star())
 
-        keys = pygame.key.get_pressed()
+            # de-increment the cooldown counter by 1 if it is greater than 0
+            if self.player.cooldown_counter > 0:
+                self.player.cooldown_counter -= 1
+            self._UpdateBulletProjectiles()
+            self._UpdateAsteroids()
+            self._UpdateStars()
 
-        if keys[pygame.K_ESCAPE]:
-            break
+            self._CheckCollisions()
 
-        if keys[pygame.K_LEFT]:
-            player.move_left()
+            # if running check here prevents the game crashing after the player dies,
+            if self.running:
+                # Update the scoreboard
+                self.scoreboard.display(Settings.screen)
 
-        if keys[pygame.K_RIGHT]:
-            player.move_right()
+                # Draw player
+                pygame.draw.rect(Settings.screen, self.player.color,
+                                 (self.player.x, self.player.y, self.player.width, self.player.height))
 
-        # Check if spacebar is pressed to shoot
-        if keys[pygame.K_SPACE] and player.cooldown_counter <= 0:
-            # Fire projectile
-            projectile_x = player.x + player.width // 2 - 2  # Adjusted for projectile width
-            projectile_y = player.y
-            player.blaster.play()
-            projectiles.append(Projectile(projectile_x, projectile_y))
-            player.cooldown_counter = player.projectile_cooldown
-
-        # Generate asteroids randomly
-        if random.randint(1, 100) == 1:
-            asteroids.append(Asteroid())
-        
-        # Generate stars randomly
-        if random.randint(1, 10) == 1:
-            stars.append(Star())
-
-        # deincrement the cooldown counter by 1 if it is greater than 0
-        if player.cooldown_counter > 0:
-            player.cooldown_counter -= 1
-
-        projectiles = _UpdateBulletProjectiles(projectiles)
-        asteroids = _UpdateAsteroids(asteroids)
-        stars = _UpdateStars(stars)
-
-        projectiles, asteroids, scoreboard = _CheckCollisions(projectiles, asteroids, player, scoreboard)
-        if projectiles == 'q' or asteroids == 'q':
-            running = False
-        # if running check here prevents the game crashing after the player dies,
-        if running:
-            # Update the scoreboard
-            scoreboard.display(Settings.screen)
-
-            # Draw player
-            pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
-
-            # Update the display
-            pygame.display.update()
-            clock.tick(60)
-
-    pygame.quit()
+                # Update the display
+                pygame.display.update()
+                self.clock.tick(60)
 
 
 if __name__ == '__main__':
-    run_game()
+    gs = GalacticSalvage()
+    gs.GameLoop()
