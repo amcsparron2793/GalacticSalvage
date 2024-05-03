@@ -12,15 +12,13 @@ from typing import Tuple, List
 import random
 from Player import Player
 from Asteroid import Asteroid
+from Scoreboard import Scoreboard
 from Settings import Settings
+
 
 
 # Initialize Pygame
 pygame.init()
-
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 
 
 class Projectile:
@@ -38,7 +36,7 @@ class Projectile:
 
 class Star:
     def __init__(self):
-        self.color = WHITE
+        self.color = Settings.WHITE
         self.radius = 1
         # why does this need to be // 7+ to fill the whole screen?
         self.x = random.randint(0, Settings.SCREEN_WIDTH - Settings.SCREEN_HEIGHT // 7)
@@ -132,7 +130,7 @@ def run_game():
     scoreboard = Scoreboard()
 
     while running:
-        Settings.screen.fill(BLACK)
+        Settings.screen.fill(Settings.BLACK)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
