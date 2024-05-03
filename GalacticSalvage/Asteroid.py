@@ -1,5 +1,7 @@
 from pygame import mixer, Surface, SRCALPHA, draw, transform
 import random
+from Settings import Settings
+
 
 class Asteroid:
     def __init__(self):
@@ -19,7 +21,7 @@ class Asteroid:
 
     def draw(self, screen):
         # Create a surface for the asteroid and rotate it
-        asteroid_surface = pygame.Surface((self.width, self.height), SRCALPHA)
+        asteroid_surface = Surface((self.width, self.height), SRCALPHA)
         draw.rect(asteroid_surface, self.color, (0, 0, self.width, self.height))
         # pygame.draw.polygon(asteroid_surface, self.color, (polys), self.width)#, self.height))
         rotated_surface = transform.rotate(asteroid_surface, self.angle)

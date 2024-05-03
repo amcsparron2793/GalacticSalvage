@@ -1,5 +1,7 @@
+from typing import Tuple
 from pygame import mixer
-from GalacticSalvage import Settings
+from Settings import Settings
+
 
 class Player:
     def __init__(self, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 15):
