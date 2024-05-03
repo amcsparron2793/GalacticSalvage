@@ -15,8 +15,6 @@ from Asteroid import Asteroid
 from Scoreboard import Scoreboard
 from Settings import Settings
 
-
-
 # Initialize Pygame
 pygame.init()
 
