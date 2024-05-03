@@ -256,15 +256,17 @@ def run_game():
         projectiles, asteroids, scoreboard = _CheckCollisions(projectiles, asteroids, player, scoreboard)
         if projectiles == 'q' or asteroids == 'q':
             running = False
-        # Update the scoreboard
-        scoreboard.display(Settings.screen)
+        # if running check here prevents the game crashing after the player dies,
+        if running:
+            # Update the scoreboard
+            scoreboard.display(Settings.screen)
 
-        # Draw player
-        pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
+            # Draw player
+            pygame.draw.rect(Settings.screen, player.color, (player.x, player.y, player.width, player.height))
 
-        # Update the display
-        pygame.display.update()
-        clock.tick(60)
+            # Update the display
+            pygame.display.update()
+            clock.tick(60)
 
     pygame.quit()
 
