@@ -7,33 +7,16 @@ from abandoned space stations and derelict ships.
 Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
-import pygame
-from typing import List
 import random
+from typing import List
+
+import pygame
+
 from Player import Player, Projectile
 from Asteroid import Asteroid
+from Star import Star
 from Scoreboard import Scoreboard
 from Settings import Settings, Sounds
-
-
-class Star:
-    def __init__(self):
-        self.color = Settings.WHITE
-        self.radius = 1
-        # why does this need to be // 7+ to fill the whole screen?
-        self.x = random.randint(0, Settings.SCREEN_WIDTH - Settings.SCREEN_HEIGHT // 15)
-        self.y = -Settings.SCREEN_HEIGHT  # Start above the screen
-        self.yspeed = random.randint(1, 3)
-
-    def draw(self):
-        pygame.draw.circle(Settings.screen, self.color, (self.x, self.y), self.radius)
-
-    def fall(self):
-        self.y += self.yspeed
-
-    def OffscreenReset(self):
-        if self.y >= Settings.SCREEN_HEIGHT:
-            self.y = 0
 
 
 class GalacticSalvage:
@@ -42,30 +25,31 @@ class GalacticSalvage:
     def __init__(self):
         # Initialize Pygame
         pygame.init()
+        self.settings = Settings()
 
         self.running = True
-        self.player = Player()
+        self.player = Player(self)
         self.projectiles: List[Projectile] = []
         self.asteroids: List[Asteroid] = []
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard()
         self.sounds = Sounds()
+        # TODO: add lives (3 missed asteroids?)
 
     def FireWeapon(self):
-        # Fire projectile
         projectile_x = self.player.x + self.player.width // 2 - 2  # Adjusted for projectile width
         projectile_y = self.player.y
-        self.sounds.blaster_sound.play()
-        self.projectiles.append(Projectile(projectile_x, projectile_y))
+        self.sounds.blaster.play()
+        self.projectiles.append(Projectile(self, projectile_x, projectile_y))
         self.player.cooldown_counter = self.player.projectile_cooldown
 
     def _UpdateBulletProjectiles(self):
         # Update projectiles
         for projectile in self.projectiles:
             projectile.move()
-            pygame.draw.rect(Settings.screen, projectile.color,
+            pygame.draw.rect(self.settings.screen, self.settings.bullet_color,
                              (projectile.x, projectile.y,
-                              projectile.width, projectile.height))
+                              self.settings.bullet_width, self.settings.bullet_height))
             # Remove projectiles that go off-screen
             if projectile.y < 0:
                 self.projectiles.remove(projectile)
@@ -75,11 +59,11 @@ class GalacticSalvage:
         # Update asteroids
         for asteroid in self.asteroids:
             asteroid.move()
-            asteroid.draw(Settings.screen)  # Draw the asteroid with rotation
+            asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
             # Remove asteroids that go off-screen
-            if asteroid.y > Settings.SCREEN_HEIGHT:
+            if asteroid.y > self.settings.screen_height:
                 self.asteroids.remove(asteroid)
-                self.sounds.missed_asteroid_sound.play()
+                self.sounds.missed_asteroid.play()
                 self.scoreboard.decrease_score()
         return self.asteroids
 
@@ -97,7 +81,7 @@ class GalacticSalvage:
             asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
             # if the two hit boxes collide, then remove the projectile and the asteroid
             if player_rect.colliderect(asteroid_rect):
-                mx = self.sounds.boom_sound.play()
+                mx = self.sounds.player_boom.play()
                 if mx:
                     while mx.get_busy():
                         pass
@@ -106,14 +90,16 @@ class GalacticSalvage:
 
         for projectile in self.projectiles:
             # create a hit box around the bullet
-            projectile_rect = pygame.Rect(projectile.x, projectile.y, projectile.width, projectile.height)
+            projectile_rect = pygame.Rect(projectile.x, projectile.y,
+                                          self.settings.bullet_width,
+                                          self.settings.bullet_height)
             for asteroid in self.asteroids:
                 # create a hit box around the asteroid
                 asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
                 # if the two hit boxes collide, then remove the projectile and the asteroid
                 if projectile_rect.colliderect(asteroid_rect):
                     self.scoreboard.increase_score()
-                    asteroid.boom.play()
+                    self.sounds.asteroid_boom.play()
                     # Remove the projectile and asteroid
                     self.projectiles.remove(projectile)
                     self.asteroids.remove(asteroid)
@@ -123,7 +109,7 @@ class GalacticSalvage:
 
     def GameLoop(self):
         while self.running:
-            Settings.screen.fill(Settings.BLACK)
+            self.settings.screen.fill(Settings.BLACK)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -146,11 +132,11 @@ class GalacticSalvage:
 
             # Generate asteroids randomly
             if random.randint(1, 100) == 1:
-                self.asteroids.append(Asteroid())
+                self.asteroids.append(Asteroid(self))
 
             # Generate stars randomly
             if random.randint(1, 10) == 1:
-                self.stars.append(Star())
+                self.stars.append(Star(self))
 
             # de-increment the cooldown counter by 1 if it is greater than 0
             if self.player.cooldown_counter > 0:
@@ -164,10 +150,10 @@ class GalacticSalvage:
             # if running check here prevents the game crashing after the player dies,
             if self.running:
                 # Update the scoreboard
-                self.scoreboard.display(Settings.screen)
+                self.scoreboard.display(self.settings.screen)
 
                 # Draw player
-                pygame.draw.rect(Settings.screen, self.player.color,
+                pygame.draw.rect(self.settings.screen, self.player.color,
                                  (self.player.x, self.player.y, self.player.width, self.player.height))
 
                 # Update the display

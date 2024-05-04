@@ -1,19 +1,18 @@
-from pygame import mixer, Surface, SRCALPHA, draw, transform
+from pygame import Surface, SRCALPHA, draw, transform
 import random
-from Settings import Settings
 
 
 class Asteroid:
-    def __init__(self):
+    def __init__(self, gs_game):
+        self.settings = gs_game.settings
         self.width = random.randint(20, 50)
         self.height = random.randint(20, 50)
         self.color = (150, 150, 150)
-        self.x = random.randint(0, Settings.SCREEN_WIDTH - self.width)
+        self.x = random.randint(0, self.settings.screen_width - self.width)
         self.y = -self.height  # Start above the screen
         self.speed = random.randint(1, 3)
         self.angle = 0
         self.rotation_speed = random.uniform(-0.5, 0.5)  # Random rotation speed
-        self.boom = mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
 
     def move(self):
         self.y += self.speed
