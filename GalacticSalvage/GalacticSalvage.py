@@ -12,7 +12,7 @@ from typing import List
 
 import pygame
 
-from Player import Player, Projectile
+from Player import Player, Bullet
 from Asteroid import Asteroid
 from Star import Star
 from Scoreboard import Scoreboard
@@ -29,35 +29,85 @@ class GalacticSalvage:
 
         self.running = True
         self.player = Player(self)
-        self.projectiles: List[Projectile] = []
-        self.asteroids: List[Asteroid] = []
+        self.bullets = pygame.sprite.Group()
+        self.asteroids = pygame.sprite.Group()
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard()
         self.sounds = Sounds()
         # TODO: add lives (3 missed asteroids?)
 
-    def FireWeapon(self):
-        projectile_x = self.player.x + self.player.width // 2 - 2  # Adjusted for projectile width
-        projectile_y = self.player.y
-        self.sounds.blaster.play()
-        self.projectiles.append(Projectile(self, projectile_x, projectile_y))
-        self.player.cooldown_counter = self.player.projectile_cooldown
+    def _check_keydown_events(self, event):
+        """ Respond to key presses. """
+        if event.key == pygame.K_RIGHT:
+            # move the ship to the right
+            self.player.moving_right = True
+
+        elif event.key == pygame.K_LEFT:
+            # move the ship to the left
+            self.player.moving_left = True
+
+        elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
+            # self.sb.write_highscore()
+            # if q or esc is pressed write the highscore file and quit the game
+            # sys.exit()
+            pygame.quit()
+
+        elif event.key == pygame.K_SPACE: #and self.stats.game_active is True:
+            self._fire_bullet()
+
+    def _check_keyup_events(self, event):
+        """ Respond to key releases. """
+        if event.key == pygame.K_RIGHT:
+            self.player.moving_right = False
+        elif event.key == pygame.K_LEFT:
+            self.player.moving_left = False
+
+    def _fire_bullet(self):
+        """ Create a new bullet and add it to the bullets group. """
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+            self.sounds.blaster.play()
+
+    def _update_bullets(self):
+        """ Update position of bullets and get rid of old bullets. """
+        # Update bullet positions.
+        self.bullets.update()
+
+        # get rid of bullets that have disappeared.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+        # for debugging this makes sure that the bullets are actually being deleted
+        # print(len(self.bullets))
+        self._check_bullet_asteroid_collisions()
+
+    def _check_bullet_asteroid_collisions(self):
+        """ Respond to bullet asteroid collisions. """
+
+        # Check for any bullets that have hit asteroids.
+        # If so, get rid of the bullet and the asteroid.
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.asteroids, True, True)
+
+        if collisions:
+            for asteroids in collisions.values():
+                self.scoreboard.increase_score()
+                self.sounds.asteroid_boom.play()
 
     def _UpdateBulletProjectiles(self):
-        # Update projectiles
-        for projectile in self.projectiles:
-            projectile.move()
-            pygame.draw.rect(self.settings.screen, self.settings.bullet_color,
-                             (projectile.x, projectile.y,
-                              self.settings.bullet_width, self.settings.bullet_height))
-            # Remove projectiles that go off-screen
-            if projectile.y < 0:
-                self.projectiles.remove(projectile)
-        return self.projectiles
+        self.bullets.update()
+
+        # get rid of bullets that have disappeared.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+        self._check_bullet_asteroid_collisions()
 
     def _UpdateAsteroids(self):
         # Update asteroids
-        for asteroid in self.asteroids:
+        self.asteroids.update()
+        """for asteroid in self.asteroids:
             asteroid.move()
             asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
             # Remove asteroids that go off-screen
@@ -65,7 +115,7 @@ class GalacticSalvage:
                 self.asteroids.remove(asteroid)
                 self.sounds.missed_asteroid.play()
                 self.scoreboard.decrease_score()
-        return self.asteroids
+        return self.asteroids"""
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -74,40 +124,53 @@ class GalacticSalvage:
             star.OffscreenReset()
         return self.stars
 
-    def _CheckCollisions(self):
-        player_rect = pygame.Rect(self.player.x, self.player.y, self.player.width, self.player.height)
-        for asteroid in self.asteroids:
-            # create a hit box around the asteroid
-            asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
-            # if the two hit boxes collide, then remove the projectile and the asteroid
-            if player_rect.colliderect(asteroid_rect):
-                mx = self.sounds.player_boom.play()
-                if mx:
-                    while mx.get_busy():
-                        pass
-                self.running = False
-            # TODO: background music?
+    def _check_events(self):
+        """ Respond to key presses and mouse events. """
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
 
-        for projectile in self.projectiles:
-            # create a hit box around the bullet
-            projectile_rect = pygame.Rect(projectile.x, projectile.y,
-                                          self.settings.bullet_width,
-                                          self.settings.bullet_height)
-            for asteroid in self.asteroids:
-                # create a hit box around the asteroid
-                asteroid_rect = pygame.Rect(asteroid.x, asteroid.y, asteroid.width, asteroid.height)
-                # if the two hit boxes collide, then remove the projectile and the asteroid
-                if projectile_rect.colliderect(asteroid_rect):
-                    self.scoreboard.increase_score()
-                    self.sounds.asteroid_boom.play()
-                    # Remove the projectile and asteroid
-                    self.projectiles.remove(projectile)
-                    self.asteroids.remove(asteroid)
-                    # Break out of the inner loop since projectile can only collide with one asteroid at a time
-                    break
-        return self.projectiles, self.asteroids, self.scoreboard
+            elif event.type == pygame.KEYDOWN:
+                self._check_keydown_events(event)
 
-    def GameLoop(self):
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
+
+    def _update_screen(self):
+        """ Update images on the screen and flip to the new screen. """
+        self.settings.screen.fill(self.settings.bg_color)
+        self.player.biltme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+        self.asteroids.draw(self.settings.screen)
+
+
+        # Draw the score information
+        #self.sb.show_score()
+
+        # draw the play button if the game is inactive
+        """if not self.stats.game_active:
+            self.play_button.draw_button()"""
+
+        # Make the most recently drawn screen visible
+        pygame.display.flip()
+
+    def run_game(self):
+        """start the main loop for the game"""
+        while True:
+            self._check_events()
+
+            self.player.update()
+            self._update_bullets()
+            self._UpdateAsteroids()
+            self._UpdateStars()
+            self._update_screen()
+
+
+
+    """def GameLoop(self):
         while self.running:
             self.settings.screen.fill(Settings.BLACK)
 
@@ -128,11 +191,13 @@ class GalacticSalvage:
 
             # Check if spacebar is pressed to shoot
             if keys[pygame.K_SPACE] and self.player.cooldown_counter <= 0:
-                self.FireWeapon()
+                self._fire_bullet()
 
             # Generate asteroids randomly
             if random.randint(1, 100) == 1:
-                self.asteroids.append(Asteroid(self))
+                new_asteroid = Asteroid(self)
+                self.asteroids.add(new_asteroid)
+                self.asteroids.update()
 
             # Generate stars randomly
             if random.randint(1, 10) == 1:
@@ -145,7 +210,7 @@ class GalacticSalvage:
             self._UpdateAsteroids()
             self._UpdateStars()
 
-            self._CheckCollisions()
+            # self._CheckCollisions()
 
             # if running check here prevents the game crashing after the player dies,
             if self.running:
@@ -158,9 +223,9 @@ class GalacticSalvage:
 
                 # Update the display
                 pygame.display.update()
-                self.clock.tick(60)
+                self.clock.tick(60)"""
 
 
 if __name__ == '__main__':
     gs = GalacticSalvage()
-    gs.GameLoop()
+    gs.run_game()
