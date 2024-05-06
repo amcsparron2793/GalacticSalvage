@@ -34,6 +34,7 @@ class GalacticSalvage:
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard()
         self.sounds = Sounds()
+        self._create_asteroids()
         # TODO: add lives (3 missed asteroids?)
 
     def _check_keydown_events(self, event):
@@ -84,38 +85,37 @@ class GalacticSalvage:
 
     def _check_bullet_asteroid_collisions(self):
         """ Respond to bullet asteroid collisions. """
-
         # Check for any bullets that have hit asteroids.
         # If so, get rid of the bullet and the asteroid.
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.asteroids, True, True)
 
         if collisions:
-            for asteroids in collisions.values():
+            for asteroid in collisions.values():
                 self.scoreboard.increase_score()
                 self.sounds.asteroid_boom.play()
+                self.asteroids.remove(asteroid)
+                print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
 
-    def _UpdateBulletProjectiles(self):
-        self.bullets.update()
+    def _create_asteroids(self):
+        # Create asteroids and add them to the sprite groups
+        for _ in range(5):  # Adjust the number of asteroids as needed
+            asteroid = Asteroid(self)
+            self.asteroids.add(asteroid)
 
-        # get rid of bullets that have disappeared.
-        for bullet in self.bullets.copy():
-            if bullet.rect.bottom <= 0:
-                self.bullets.remove(bullet)
-        self._check_bullet_asteroid_collisions()
-
-    def _UpdateAsteroids(self):
+    def _update_asteroids(self):
         # Update asteroids
         self.asteroids.update()
-        """for asteroid in self.asteroids:
-            asteroid.move()
-            asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
+        for asteroid in self.asteroids.copy():
+            # asteroid.move()
+            # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
+            # print("asteroid drawn")
             # Remove asteroids that go off-screen
-            if asteroid.y > self.settings.screen_height:
+            if asteroid.rect.bottom > self.settings.screen_height:
                 self.asteroids.remove(asteroid)
+                print("asteroid removed")
                 self.sounds.missed_asteroid.play()
                 self.scoreboard.decrease_score()
-        return self.asteroids"""
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -144,8 +144,10 @@ class GalacticSalvage:
         self.player.biltme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        self.asteroids.draw(self.settings.screen)
-
+        for asteroid in self.asteroids.sprites():
+            asteroid.draw_asteroid()
+        #self.asteroids.draw(self.settings.screen)
+        #print(len(self.asteroids))
 
         # Draw the score information
         #self.sb.show_score()
@@ -160,11 +162,13 @@ class GalacticSalvage:
     def run_game(self):
         """start the main loop for the game"""
         while True:
+            print(len(self.asteroids))
+            if len(self.asteroids) <= 1:
+                self._create_asteroids()
             self._check_events()
-
             self.player.update()
             self._update_bullets()
-            self._UpdateAsteroids()
+            self._update_asteroids()
             self._UpdateStars()
             self._update_screen()
 
