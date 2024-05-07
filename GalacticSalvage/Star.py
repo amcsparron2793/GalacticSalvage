@@ -9,7 +9,6 @@ class Star:
         self.radius = 1
         # why does this need to be // 15+ to fill the whole screen?
         self.x = random.randint(0, self.settings.screen_width)
-        print(self.x)
         self.y = -self.settings.screen_height  # Start above the screen
         self.yspeed = random.randint(1, 3)
 

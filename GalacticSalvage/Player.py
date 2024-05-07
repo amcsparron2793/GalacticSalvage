@@ -27,7 +27,7 @@ class Bullet(Sprite):
 
 
 class Player(Sprite):
-    def __init__(self, gs_game, color: Tuple[int, int, int] = (0, 255, 0), projectile_cooldown: int = 15):
+    def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
         self.screen = self.settings.screen
@@ -39,12 +39,8 @@ class Player(Sprite):
 
         self.width = 50
         self.height = 50
-        self.color = color
 
         self.x = float(self.rect.x)
-        self.y = self.settings.screen_height - self.height - 20
-        self.projectile_cooldown = projectile_cooldown  # Cooldown period in frames
-        self.cooldown_counter = 0
 
         # Movement flags
         self.moving_right = False
@@ -72,8 +68,8 @@ class Player(Sprite):
 
     def move_left(self):
         if self.x > 0:
-            self.x -= self.speed
+            self.x -= self.settings.ship_speed
 
     def move_right(self):
         if self.x < self.settings.screen_width - self.width:
-            self.x += self.speed
+            self.x += self.settings.ship_speed

@@ -96,12 +96,14 @@ class GalacticSalvage:
                 self.sounds.asteroid_boom.play()
                 self.asteroids.remove(asteroid)
                 print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
+                self._create_asteroids()
 
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
-        for _ in range(5):  # Adjust the number of asteroids as needed
-            asteroid = Asteroid(self)
-            self.asteroids.add(asteroid)
+        if len(self.asteroids) < 1:
+            for _ in range(random.randint(1, 5)):  # Adjust the number of asteroids as needed
+                asteroid = Asteroid(self)
+                self.asteroids.add(asteroid)
 
     def _update_asteroids(self):
         # Update asteroids
@@ -111,11 +113,11 @@ class GalacticSalvage:
             # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
             # print("asteroid drawn")
             # Remove asteroids that go off-screen
-            if asteroid.rect.bottom > self.settings.screen_height:
+            if asteroid.rect.bottom >= self.settings.screen_height:
                 self.asteroids.remove(asteroid)
-                print("asteroid removed")
                 self.sounds.missed_asteroid.play()
                 self.scoreboard.decrease_score()
+                self._create_asteroids()
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -144,10 +146,7 @@ class GalacticSalvage:
         self.player.biltme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        for asteroid in self.asteroids.sprites():
-            asteroid.draw_asteroid()
-        #self.asteroids.draw(self.settings.screen)
-        #print(len(self.asteroids))
+        self.asteroids.draw(self.settings.screen)
 
         # Draw the score information
         #self.sb.show_score()
@@ -158,13 +157,11 @@ class GalacticSalvage:
 
         # Make the most recently drawn screen visible
         pygame.display.flip()
+        self.clock.tick(120)
 
     def run_game(self):
         """start the main loop for the game"""
         while True:
-            print(len(self.asteroids))
-            if len(self.asteroids) <= 1:
-                self._create_asteroids()
             self._check_events()
             self.player.update()
             self._update_bullets()
