@@ -15,11 +15,15 @@ class Settings:
     RED = (255, 0, 0)
 
     # Colors
-    def __init__(self):
+    def __init__(self, fullscreen=False):
         # Set up the screen dimensions
         self.screen_width = 800
         self.screen_height = 600
-        self.screen = display.set_mode((self.screen_width, self.screen_height))
+        self.fullscreen_width_height = display.get_desktop_sizes()
+        if not fullscreen:
+            self.screen = display.set_mode((self.screen_width, self.screen_height))
+        else:
+            self.screen = display.set_mode(self.fullscreen_width_height[0])
         display.set_caption("Galactic Salvage")
         self.bg_color = self.BLACK
 
@@ -29,4 +33,8 @@ class Settings:
         self.bullet_speed = 5
         self.bullets_allowed = 3
         self.ship_speed = 5
+
+    @staticmethod
+    def ToggleFullscreen():
+        display.toggle_fullscreen()
 

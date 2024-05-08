@@ -49,12 +49,13 @@ class GalacticSalvage:
 
         elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
             # self.sb.write_highscore()
-            # if q or esc is pressed write the highscore file and quit the game
-            # sys.exit()
-            pygame.quit()
+            # if q or esc is pressed quit the game
+            self.running = False
 
         elif event.key == pygame.K_SPACE: #and self.stats.game_active is True:
             self._fire_bullet()
+        elif event.key == pygame.K_F12:
+            self.settings.ToggleFullscreen()
 
     def _check_keyup_events(self, event):
         """ Respond to key releases. """
@@ -95,7 +96,7 @@ class GalacticSalvage:
                 self.scoreboard.increase_score()
                 self.sounds.asteroid_boom.play()
                 self.asteroids.remove(asteroid)
-                print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
+                # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
                 self._create_asteroids()
 
     def _create_asteroids(self):
@@ -113,7 +114,7 @@ class GalacticSalvage:
             # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
             # print("asteroid drawn")
             # Remove asteroids that go off-screen
-            if asteroid.rect.bottom >= self.settings.screen_height:
+            if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
                 self.sounds.missed_asteroid.play()
                 self.scoreboard.decrease_score()
@@ -149,7 +150,7 @@ class GalacticSalvage:
         self.asteroids.draw(self.settings.screen)
 
         # Draw the score information
-        #self.sb.show_score()
+        self.scoreboard.display(self.settings.screen)
 
         # draw the play button if the game is inactive
         """if not self.stats.game_active:
@@ -158,73 +159,18 @@ class GalacticSalvage:
         # Make the most recently drawn screen visible
         pygame.display.flip()
         self.clock.tick(120)
+        # self.clock.tick(60)
 
     def run_game(self):
         """start the main loop for the game"""
-        while True:
+        while self.running:
             self._check_events()
             self.player.update()
             self._update_bullets()
             self._update_asteroids()
             self._UpdateStars()
             self._update_screen()
-
-
-
-    """def GameLoop(self):
-        while self.running:
-            self.settings.screen.fill(Settings.BLACK)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-
-            keys = pygame.key.get_pressed()
-
-            if keys[pygame.K_ESCAPE]:
-                break
-
-            if keys[pygame.K_LEFT]:
-                self.player.move_left()
-
-            if keys[pygame.K_RIGHT]:
-                self.player.move_right()
-
-            # Check if spacebar is pressed to shoot
-            if keys[pygame.K_SPACE] and self.player.cooldown_counter <= 0:
-                self._fire_bullet()
-
-            # Generate asteroids randomly
-            if random.randint(1, 100) == 1:
-                new_asteroid = Asteroid(self)
-                self.asteroids.add(new_asteroid)
-                self.asteroids.update()
-
-            # Generate stars randomly
-            if random.randint(1, 10) == 1:
-                self.stars.append(Star(self))
-
-            # de-increment the cooldown counter by 1 if it is greater than 0
-            if self.player.cooldown_counter > 0:
-                self.player.cooldown_counter -= 1
-            self._UpdateBulletProjectiles()
-            self._UpdateAsteroids()
-            self._UpdateStars()
-
-            # self._CheckCollisions()
-
-            # if running check here prevents the game crashing after the player dies,
-            if self.running:
-                # Update the scoreboard
-                self.scoreboard.display(self.settings.screen)
-
-                # Draw player
-                pygame.draw.rect(self.settings.screen, self.player.color,
-                                 (self.player.x, self.player.y, self.player.width, self.player.height))
-
-                # Update the display
-                pygame.display.update()
-                self.clock.tick(60)"""
+        pygame.quit()
 
 
 if __name__ == '__main__':
