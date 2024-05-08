@@ -1,5 +1,14 @@
 from pygame import display, mixer
+from BetterConfigAJM.BetterConfigAJM import BetterConfigAJM as BetterConfig
 
+config = BetterConfig('config.cfg','../cfg')
+
+
+class GsConfig(BetterConfig):
+    # TODO: write default config
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_config = [{}]
 
 class Sounds:
     def __init__(self):
