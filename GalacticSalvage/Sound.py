@@ -1,4 +1,4 @@
-from pygame import mixer
+from pygame import mixer, image, transform
 
 
 class Sounds:
@@ -10,6 +10,8 @@ class Sounds:
         self.asteroid_boom = mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
         self.mx = mixer.find_channel()
         self._is_muted = None
+        self.mute_symbol = image.load('../Misc_Project_Files/images/sound-off.png')
+        self.mute_symbol = transform.scale_by(self.mute_symbol, 0.05)
 
         if self.settings.sound_muted:
             self._mute()
@@ -39,3 +41,16 @@ class Sounds:
 
     def _unmute(self):
         self.mx.set_volume(100)
+
+    def draw_mute_img(self, screen):
+        # Load the image onto a surface
+        mute_surface = self.mute_symbol
+
+        # Set the position of the mute image
+        mute_rect = mute_surface.get_rect()
+
+        #mute_rect.topright = (self.settings.screen_width, (self.settings.screen_height - mute_rect.height))
+        #print(mute_rect.topright)
+
+        # Blit the mute image onto the screen
+        screen.blit(mute_surface, (self.settings.screen_width - 50, 10))

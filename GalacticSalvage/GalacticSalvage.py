@@ -158,6 +158,9 @@ class GalacticSalvage:
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
 
+        if self.sounds.is_muted:
+            self.sounds.draw_mute_img(self.settings.screen)
+
         # draw the play button if the game is inactive
         """if not self.stats.game_active:
             self.play_button.draw_button()"""
