@@ -17,7 +17,8 @@ class Asteroid(Sprite):
             draw.rect(self.image, self.color, (0, 0, self.width, self.height))
         else:
             self.image = image.load('../Misc_Project_Files/images/SingleAsteroid.png')
-            self.image = transform.scale_by(self.image, 0.05)
+            self.image = transform.scale_by(self.image, random.uniform(
+                self.settings.asteroid_scale_min, self.settings.asteroid_scale_max))
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
