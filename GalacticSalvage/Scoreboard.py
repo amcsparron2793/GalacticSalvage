@@ -3,10 +3,11 @@ from pygame import font
 
 
 class Scoreboard:
-    def __init__(self, font_size=30):
+    def __init__(self, gs_game):
+        self.settings = gs_game.settings
         self.score = 0
-        self.font = font.SysFont(None, font_size)
-        self.color = Settings.WHITE
+        self.font = font.SysFont(self.settings.scoreboard_font_name, self.settings.scoreboard_font_size)
+        self.color = self.settings.scoreboard_font_color
 
     def increase_score(self, amount=1):
         self.score += amount

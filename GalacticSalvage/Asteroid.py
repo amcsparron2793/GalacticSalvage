@@ -19,9 +19,9 @@ class Asteroid(Sprite):
             self.image = image.load('../Misc_Project_Files/images/SingleAsteroid.png')
             self.image = transform.scale_by(self.image, 0.05)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, self.settings.screen_width - self.width)
-        self.rect.y = -self.settings.screen_height - self.height  # Start above the screen
-        self.speed = random.randint(1, 3)
+        self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
+        self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
+        self.speed = random.randint(self.settings.asteroid_speed_min, self.settings.asteroid_speed_max)
         self.angle = 0
         self.rotation_speed = random.uniform(-1, 1)  # Random rotation speed
 

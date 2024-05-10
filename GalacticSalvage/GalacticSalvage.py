@@ -16,7 +16,8 @@ from Player import Player, Bullet
 from Asteroid import Asteroid
 from Star import Star
 from Scoreboard import Scoreboard
-from Settings import Settings, Sounds
+from Settings import Settings
+from Sound import Sounds
 
 
 class GalacticSalvage:
@@ -32,8 +33,11 @@ class GalacticSalvage:
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.stars: List[Star] = []
-        self.scoreboard = Scoreboard()
-        self.sounds = Sounds()
+        self.scoreboard = Scoreboard(self)
+
+        self.sounds = Sounds(self)
+        self.mix = self.sounds.mx
+
         self._create_asteroids()
         # TODO: add lives (3 missed asteroids?)
 
@@ -56,6 +60,8 @@ class GalacticSalvage:
             self._fire_bullet()
         elif event.key == pygame.K_F12:
             self.settings.ToggleFullscreen()
+        elif event.key == pygame.K_m:
+            self.sounds.ToggleMute()
 
     def _check_keyup_events(self, event):
         """ Respond to key releases. """
@@ -69,7 +75,7 @@ class GalacticSalvage:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
-            self.sounds.blaster.play()
+            self.mix.play(self.sounds.blaster)
 
     def _update_bullets(self):
         """ Update position of bullets and get rid of old bullets. """
@@ -94,7 +100,7 @@ class GalacticSalvage:
         if collisions:
             for asteroid in collisions.values():
                 self.scoreboard.increase_score()
-                self.sounds.asteroid_boom.play()
+                self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
                 self._create_asteroids()
@@ -116,7 +122,7 @@ class GalacticSalvage:
             # Remove asteroids that go off-screen
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
-                self.sounds.missed_asteroid.play()
+                self.mix.play(self.sounds.missed_asteroid)
                 self.scoreboard.decrease_score()
                 self._create_asteroids()
 
