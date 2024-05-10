@@ -167,8 +167,8 @@ class GalacticSalvage:
 
         # Make the most recently drawn screen visible
         pygame.display.flip()
-        self.clock.tick(120)
-        # self.clock.tick(60)
+        # self.clock.tick(120)
+        self.clock.tick(60)
 
     def run_game(self):
         """start the main loop for the game"""

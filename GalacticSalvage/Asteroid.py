@@ -29,4 +29,11 @@ class Asteroid(Sprite):
     def update(self):
         self.rect.y += self.speed
         self.angle += self.rotation_speed
+
+        # Limit the rotation angle within a range (-180 to 180 degrees)
+        # if self.angle > 180:
+        #     self.angle -= 360
+        # elif self.angle < -180:
+        #     self.angle += 360
+        #
         # self.image = transform.rotate(self.image, self.angle)
