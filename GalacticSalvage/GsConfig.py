@@ -1,5 +1,5 @@
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
-
+from utils import ColorConverter
 
 class GsConfig(BetterConfig):
     def __init__(self, config_filename, config_dir, config_list_dict=None, *args, **kwargs):
@@ -13,19 +13,22 @@ class GsConfig(BetterConfig):
                         'windowed_mode': 'True',
                         'screen_width': 800,
                         'screen_height': 600,
-                        'sound_muted': 'False'
+                        'sound_muted': 'False',
+                        'bg_color': ColorConverter.rgb_to_hex((0, 0, 0))
                     },
                 'BULLET':
                     {
                         'bullet_width': 5,
                         'bullet_height': 15,
                         'bullets_allowed': 3,
-                        'bullet_speed':  5
+                        'bullet_speed':  5,
+                        'bullet_color': ColorConverter.rgb_to_hex((255, 0, 0))
                     },
                 'SCOREBOARD':
                     {
                         'font_name': '',
                         'font_size': 30,
+                        'scoreboard_font_color': ColorConverter.rgb_to_hex((255, 255, 255))
                     },
                 'ASTEROID':
                     {

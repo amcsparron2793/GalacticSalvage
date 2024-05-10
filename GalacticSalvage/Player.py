@@ -1,4 +1,3 @@
-from typing import Tuple
 from pygame import image, Rect, draw, transform
 from pygame.sprite import Sprite
 
@@ -9,7 +8,7 @@ class Bullet(Sprite):
         super().__init__()
         self.settings = gs_game.settings
         self.screen = self.settings.screen
-        self.color = self.settings.RED
+        self.color = self.settings.bullet_color
         self.rect = Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)
         self.rect.midtop = gs_game.player.rect.midtop
         self.y = float(self.rect.y)

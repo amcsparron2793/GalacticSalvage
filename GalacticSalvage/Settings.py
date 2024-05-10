@@ -1,13 +1,12 @@
 from pygame import display
 from GsConfig import GsConfig
-
+from utils import ColorConverter
 
 class Settings:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
 
-    # Colors
     def __init__(self, **kwargs):
         self.config = GsConfig('config.ini', '../cfg')
         self.config.GetConfig()
@@ -33,11 +32,11 @@ class Settings:
             self.screen = display.set_mode(self.fullscreen_width_height[0])
 
         display.set_caption("Galactic Salvage")
-        self.bg_color = self.BLACK
+        self.bg_color = ColorConverter.hex_to_rgb(self.config.get('DEFAULT', 'bg_color'))
 
         self.bullet_width = self.config.getint('BULLET', 'bullet_width')
         self.bullet_height = self.config.getint('BULLET', 'bullet_height')
-        self.bullet_color = self.RED
+        self.bullet_color = ColorConverter.hex_to_rgb(self.config.get('BULLET', 'bullet_color'))
 
         self.bullet_speed = self.config.getint('BULLET', 'bullet_speed')
         self.bullets_allowed = self.config.getint('BULLET', 'bullets_allowed')
@@ -51,7 +50,8 @@ class Settings:
 
         self.scoreboard_font_name = self.config.get('SCOREBOARD', 'font_name')
         self.scoreboard_font_size = self.config.getint('SCOREBOARD', 'font_size')
-        self.scoreboard_font_color = self.WHITE
+        self.scoreboard_font_color = ColorConverter.hex_to_rgb(
+            self.config.get('SCOREBOARD', 'scoreboard_font_color'))
 
         self.sound_muted = self.config.getboolean('DEFAULT', 'sound_muted')
 
