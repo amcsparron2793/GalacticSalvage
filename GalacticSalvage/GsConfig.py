@@ -32,11 +32,11 @@ class GsConfig(BetterConfig):
                     },
                 'ASTEROID':
                     {
-                        'asteroid_speed_min': 1,
-                        'asteroid_speed_max': 3,
+                        'asteroid_speed_min': 2,
+                        'asteroid_speed_max': 6,
                         'asteroid_total_max': 5,
-                        'asteroid_scale_min': 0.03,
-                        'asteroid_scale_max': 0.07
+                        'asteroid_scale_min': 0.02,
+                        'asteroid_scale_max': 0.08
                     }
             }
         ]
