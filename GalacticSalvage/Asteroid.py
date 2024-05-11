@@ -1,8 +1,9 @@
-from os.path import isfile
+from os import listdir
+from os.path import isfile, join
 
-from pygame import Surface, SRCALPHA, draw, transform, Rect, image
-import random
+from pygame import Surface, SRCALPHA, draw, transform, image, time, display
 from pygame.sprite import Sprite
+import random
 
 
 class Asteroid(Sprite):
@@ -37,3 +38,19 @@ class Asteroid(Sprite):
         #     self.angle += 360
         #
         # self.image = transform.rotate(self.image, self.angle)
+
+
+class Explosion(Sprite):
+    def __init__(self, gs_game):
+        super().__init__()
+        self.settings = gs_game.settings
+        frame_dir = '../Misc_Project_Files/images/ExplosionPNG/'
+        self.animation_frames = [image.load(join(frame_dir, x)) for x in listdir(frame_dir)]
+
+    def play_animation(self):
+        # frame_duration = 50  # Duration of each frame in milliseconds
+        for frame in self.animation_frames:
+            rect = frame.get_rect()
+            display.update(rect)
+            self.settings.screen.blit(transform.scale_by(frame, 1.5), (rect.x, rect.y))  # Display the current frame
+            # time.wait(frame_duration)  # Pause for the frame duration

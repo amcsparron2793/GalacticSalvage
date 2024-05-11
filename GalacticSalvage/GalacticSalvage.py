@@ -13,7 +13,7 @@ from typing import List
 import pygame
 
 from Player import Player, Bullet
-from Asteroid import Asteroid
+from Asteroid import Asteroid, Explosion
 from Star import Star
 from Scoreboard import Scoreboard
 from Settings import Settings
@@ -30,8 +30,11 @@ class GalacticSalvage:
 
         self.running = True
         self.player = Player(self)
+
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.explosions = pygame.sprite.Group()
+
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard(self)
 
@@ -77,6 +80,14 @@ class GalacticSalvage:
             self.bullets.add(new_bullet)
             self.mix.play(self.sounds.blaster)
 
+    def MakeExplosion(self):
+        explosion = Explosion(self)
+        self.explosions.add(explosion)
+
+        for exp in self.explosions:
+            exp.play_animation()
+        self.explosions.remove(explosion)
+
     def _update_bullets(self):
         """ Update position of bullets and get rid of old bullets. """
         # Update bullet positions.
@@ -102,6 +113,8 @@ class GalacticSalvage:
                 self.scoreboard.increase_score()
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
+                # FIXME: the explosion does not play in the right spot.
+                self.MakeExplosion()
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
                 self._create_asteroids()
 
