@@ -1,6 +1,7 @@
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
 from utils import ColorConverter
 
+
 class GsConfig(BetterConfig):
     def __init__(self, config_filename, config_dir, config_list_dict=None, *args, **kwargs):
         super().__init__(config_filename, config_dir, config_list_dict, *args, **kwargs)
@@ -14,7 +15,8 @@ class GsConfig(BetterConfig):
                         'screen_width': 800,
                         'screen_height': 600,
                         'sound_muted': 'False',
-                        'bg_color': ColorConverter.rgb_to_hex((0, 0, 0))
+                        'bg_color': ColorConverter.rgb_to_hex((0, 0, 0)),
+                        'show_fps': 'False'
                     },
                 'BULLET':
                     {
@@ -28,7 +30,8 @@ class GsConfig(BetterConfig):
                     {
                         'font_name': '',
                         'font_size': 30,
-                        'scoreboard_font_color': ColorConverter.rgb_to_hex((255, 255, 255))
+                        'scoreboard_font_color': ColorConverter.rgb_to_hex((255, 255, 255)),
+                        'fps_counter_color': ColorConverter.rgb_to_hex((149, 151, 154))
                     },
                 'ASTEROID':
                     {

@@ -32,6 +32,7 @@ class Settings:
             self.screen = display.set_mode(self.fullscreen_width_height[0])
 
         display.set_caption("Galactic Salvage")
+
         self.bg_color = ColorConverter.hex_to_rgb(self.config.get('DEFAULT', 'bg_color'))
 
         self.bullet_width = self.config.getint('BULLET', 'bullet_width')
@@ -52,6 +53,9 @@ class Settings:
         self.scoreboard_font_size = self.config.getint('SCOREBOARD', 'font_size')
         self.scoreboard_font_color = ColorConverter.hex_to_rgb(
             self.config.get('SCOREBOARD', 'scoreboard_font_color'))
+        self.fps_counter_color = ColorConverter.hex_to_rgb(
+            self.config.get('SCOREBOARD', 'fps_counter_color'))
+        self.show_fps = self.config.getboolean('DEFAULT', 'show_fps')
 
         self.sound_muted = self.config.getboolean('DEFAULT', 'sound_muted')
 

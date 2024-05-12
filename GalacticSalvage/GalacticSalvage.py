@@ -15,7 +15,7 @@ import pygame
 from Player import Player, Bullet
 from Asteroid import Asteroid
 from Star import Star
-from Scoreboard import Scoreboard
+from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
 
@@ -34,6 +34,7 @@ class GalacticSalvage:
         self.asteroids = pygame.sprite.Group()
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard(self)
+        self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
@@ -157,6 +158,9 @@ class GalacticSalvage:
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
+
+        if self.settings.show_fps:
+            self.fps.render_fps(self.settings.screen)
 
         if self.sounds.is_muted:
             self.sounds.draw_mute_img(self.settings.screen)
