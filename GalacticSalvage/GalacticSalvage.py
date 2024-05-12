@@ -15,7 +15,7 @@ import pygame
 from Player import Player, Bullet
 from Asteroid import Asteroid, Explosion
 from Star import Star
-from Scoreboard import Scoreboard
+from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
 
@@ -37,6 +37,7 @@ class GalacticSalvage:
 
         self.stars: List[Star] = []
         self.scoreboard = Scoreboard(self)
+        self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
@@ -118,6 +119,22 @@ class GalacticSalvage:
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
                 self._create_asteroids()
 
+    def _check_asteroid_ship_collisions(self):
+        """ Respond to ship asteroid collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.asteroids)
+
+        if collisions:
+            self.scoreboard.decrease_score(5)
+            self.mix.play(self.sounds.player_boom)
+            self.asteroids.empty()
+            self.player.remove()
+            self.player.center_ship()
+            self.player.biltme()
+            # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
+            self._create_asteroids()
+
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
         if len(self.asteroids) < 1:
@@ -171,6 +188,9 @@ class GalacticSalvage:
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
 
+        if self.settings.show_fps:
+            self.fps.render_fps(self.settings.screen)
+
         if self.sounds.is_muted:
             self.sounds.draw_mute_img(self.settings.screen)
 
@@ -187,6 +207,7 @@ class GalacticSalvage:
         """start the main loop for the game"""
         while self.running:
             self._check_events()
+            self._check_asteroid_ship_collisions()
             self.player.update()
             self._update_bullets()
             self._update_asteroids()
