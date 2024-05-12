@@ -2,6 +2,7 @@ from pygame import display
 from GsConfig import GsConfig
 from utils import ColorConverter
 
+
 class Settings:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -43,6 +44,7 @@ class Settings:
         self.bullets_allowed = self.config.getint('BULLET', 'bullets_allowed')
 
         self.ship_speed = 5
+        self.starting_lives = self.config.getint('PLAYER', 'starting_lives')
 
         self.asteroid_speed_min = self.config.getint('ASTEROID', 'asteroid_speed_min')
         self.asteroid_speed_max = self.config.getint('ASTEROID', 'asteroid_speed_max')

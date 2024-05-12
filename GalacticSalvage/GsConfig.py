@@ -18,6 +18,10 @@ class GsConfig(BetterConfig):
                         'bg_color': ColorConverter.rgb_to_hex((0, 0, 0)),
                         'show_fps': 'False'
                     },
+                'PLAYER':
+                    {
+                        'starting_lives': 3
+                    },
                 'BULLET':
                     {
                         'bullet_width': 5,

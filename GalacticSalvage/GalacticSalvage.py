@@ -30,9 +30,13 @@ class GalacticSalvage:
 
         self.running = True
         self.player = Player(self)
+        self.player_lives = self.settings.starting_lives
+
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+
         self.stars: List[Star] = []
+
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
 
