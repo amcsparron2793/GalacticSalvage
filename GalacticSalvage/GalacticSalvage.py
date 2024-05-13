@@ -30,6 +30,7 @@ class GalacticSalvage:
 
         self.running = True
         self.player = Player(self)
+        # TODO: render these on screen
         self.player_lives = self.settings.starting_lives
 
         self.bullets = pygame.sprite.Group()
@@ -117,14 +118,29 @@ class GalacticSalvage:
         collisions = pygame.sprite.spritecollideany(self.player, self.asteroids)
 
         if collisions:
-            self.scoreboard.decrease_score(5)
+            if self.scoreboard.score >= 5:
+                self.scoreboard.decrease_score(5)
+            else:
+                self.scoreboard.score = 0
+
             self.mix.play(self.sounds.player_boom)
-            self.asteroids.empty()
-            self.player.remove()
-            self.player.center_ship()
-            self.player.biltme()
-            # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
-            self._create_asteroids()
+
+            if self.player_lives > 0:
+                self.player_lives -= 1
+                self.asteroids.empty()
+                self.player.remove()
+                self.player.center_ship()
+                self.player.biltme()
+                # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
+                self._create_asteroids()
+            else:
+                self.mix.play(self.sounds.player_boom)
+                while self.mix.get_busy():
+                    pass
+                self.mix.play(self.sounds.GameOver)
+                while self.mix.get_busy():
+                    pass
+                self.running = False
 
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
