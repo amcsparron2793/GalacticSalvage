@@ -31,7 +31,6 @@ class GalacticSalvage:
         self.running = True
         self.player = Player(self)
         # TODO: render these on screen
-        self.player_lives = self.settings.starting_lives
 
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
@@ -125,8 +124,8 @@ class GalacticSalvage:
 
             self.mix.play(self.sounds.player_boom)
 
-            if self.player_lives > 0:
-                self.player_lives -= 1
+            if self.player.player_lives > 0:
+                self.player.player_lives -= 1
                 self.asteroids.empty()
                 self.player.remove()
                 self.player.center_ship()
