@@ -1,4 +1,4 @@
-from pygame import font
+from pygame import font, image, transform
 
 
 class Scoreboard:
@@ -7,6 +7,8 @@ class Scoreboard:
         self.score = 0
         self.font = font.SysFont(self.settings.scoreboard_font_name, self.settings.scoreboard_font_size)
         self.color = self.settings.scoreboard_font_color
+        self.image = image.load('../Misc_Project_Files/images/PlayerShipNoBackground.png')
+        self.image = transform.scale_by(self.image, 0.05)
 
     def increase_score(self, amount=1):
         self.score += amount
@@ -22,10 +24,20 @@ class Scoreboard:
 
     def display(self, screen):
         score_text = self.font.render("Score: " + str(self.score), True, self.color)
-        rect = score_text.get_rect()
-        location = (10, 10)
-        rect.x, rect.y = location
-        screen.blit(score_text, rect)
+        score_text_rect = score_text.get_rect()
+        score_text_location = (10, 10)
+        life_img_location = (1, 45)
+        life_img_rect = self.image.get_rect()
+
+        life_img_rect.x, life_img_rect.y = life_img_location
+        # FIXME: this doesnt update when the amount of lives change.
+        for x in range(1,  self.settings.starting_lives + 1):
+            if x != 1:
+                screen.blit(self.image, ((life_img_rect.x + (self.image.get_width() * x)), (life_img_rect.y + 15)))
+            else:
+                screen.blit(self.image, ((life_img_rect.x + (self.image.get_width() * x)), (life_img_rect.y + 15)))
+        score_text_rect.x, score_text_rect.y = score_text_location
+        screen.blit(score_text, score_text_rect)
 
 
 class FPSMon:

@@ -75,6 +75,7 @@ class GalacticSalvage:
         elif event.key == pygame.K_LEFT:
             self.player.moving_left = False
 
+    # noinspection PyTypeChecker
     def _fire_bullet(self):
         """ Create a new bullet and add it to the bullets group. """
         if len(self.bullets) < self.settings.bullets_allowed:
@@ -141,6 +142,7 @@ class GalacticSalvage:
                     pass
                 self.running = False
 
+    # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
         if len(self.asteroids) < 1:
