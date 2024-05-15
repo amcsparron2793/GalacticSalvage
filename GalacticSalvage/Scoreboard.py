@@ -24,7 +24,7 @@ class Scoreboard:
         self.score = 0
 
     def display(self, screen):
-        score_text = self.font.render("Score: " + str(self.score), True, self.color)
+        score_text = self.font.render(f"Score: {str(self.score)} Level {str(self.level)}", True, self.color)
         score_text_rect = score_text.get_rect()
         score_text_location = (10, 10)
         life_img_location = (1, 45)
