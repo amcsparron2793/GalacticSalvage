@@ -4,6 +4,7 @@ from pygame import font, image, transform
 class Scoreboard:
     def __init__(self, gs_game):
         self.settings = gs_game.settings
+        self.level = gs_game.level
         self.score = 0
         self.font = font.SysFont(self.settings.scoreboard_font_name, self.settings.scoreboard_font_size)
         self.color = self.settings.scoreboard_font_color

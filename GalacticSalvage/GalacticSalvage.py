@@ -27,6 +27,7 @@ class GalacticSalvage:
         # Initialize Pygame
         pygame.init()
         self.settings = Settings()
+        self.level = 1
 
         self.running = True
         self.player = Player(self)
@@ -42,7 +43,6 @@ class GalacticSalvage:
 
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
-
         self._create_asteroids()
         # TODO: add lives (3 missed asteroids?)
 
@@ -105,7 +105,8 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                self.scoreboard.increase_score()
+                # now score goes up by the value of level
+                self.scoreboard.increase_score(self.level)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
@@ -154,9 +155,6 @@ class GalacticSalvage:
         # Update asteroids
         self.asteroids.update()
         for asteroid in self.asteroids.copy():
-            # asteroid.move()
-            # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
-            # print("asteroid drawn")
             # Remove asteroids that go off-screen
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
@@ -211,6 +209,12 @@ class GalacticSalvage:
         # self.clock.tick(120)
         self.clock.tick(60)
 
+    def _check_level(self):
+        if self.scoreboard.score >= self.level * 10:
+            self.level += 1
+            self.scoreboard.level = self.level
+            print(f"LEVEL UP - Level {self.level}")
+
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
@@ -221,6 +225,7 @@ class GalacticSalvage:
             self._update_asteroids()
             self._UpdateStars()
             self._update_screen()
+            self._check_level()
         pygame.quit()
 
 
