@@ -2,6 +2,7 @@ from pygame import display
 from GsConfig import GsConfig
 from utils import ColorConverter
 
+
 class Settings:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -48,6 +49,8 @@ class Settings:
         self.asteroid_speed_max = self.config.getint('ASTEROID', 'asteroid_speed_max')
         self.asteroid_scale_min = self.config.getfloat('ASTEROID', 'asteroid_scale_min')
         self.asteroid_scale_max = self.config.getfloat('ASTEROID', 'asteroid_scale_max')
+        self.asteroid_speed_cap = self.config.getint('ASTEROID', 'asteroid_speed_cap')
+        self.ignore_speed_cap = self.config.getboolean('ASTEROID', 'ignore_speed_cap')
 
         self.scoreboard_font_name = self.config.get('SCOREBOARD', 'font_name')
         self.scoreboard_font_size = self.config.getint('SCOREBOARD', 'font_size')

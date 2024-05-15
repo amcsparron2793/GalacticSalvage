@@ -23,13 +23,16 @@ class Asteroid(Sprite):
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
 
-        # FIXME: this speeds up too fast...
-        self.speed_min = self.settings.asteroid_speed_min * gs_game.level // 2
+        self.speed_min = self.settings.asteroid_speed_min
         self.speed_max = self.settings.asteroid_speed_max * gs_game.level // 2
         if self.speed_min < 1:
             self.speed_min = 1
         if self.speed_max < 1:
             self.speed_max = 1
+        # overall speed ceiling
+        if not self.settings.ignore_speed_cap:
+            if self.speed_max >= self.settings.asteroid_speed_cap:
+                self.speed_max = self.settings.asteroid_speed_cap
 
         self.speed = random.randint(self.speed_min, self.speed_max)
         self.angle = 0

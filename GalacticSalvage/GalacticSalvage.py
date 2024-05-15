@@ -134,9 +134,6 @@ class GalacticSalvage:
         # Update asteroids
         self.asteroids.update()
         for asteroid in self.asteroids.copy():
-            # asteroid.move()
-            # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
-            # print("asteroid drawn")
             # Remove asteroids that go off-screen
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)

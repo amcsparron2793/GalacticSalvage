@@ -39,7 +39,9 @@ class GsConfig(BetterConfig):
                         'asteroid_speed_max': 6,
                         'asteroid_total_max': 5,
                         'asteroid_scale_min': 0.02,
-                        'asteroid_scale_max': 0.08
+                        'asteroid_scale_max': 0.08,
+                        'asteroid_speed_cap': 12,
+                        'ignore_speed_cap': False
                     }
             }
         ]
