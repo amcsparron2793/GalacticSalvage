@@ -22,7 +22,16 @@ class Asteroid(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
-        self.speed = random.randint(self.settings.asteroid_speed_min, self.settings.asteroid_speed_max)
+
+        # FIXME: this speeds up too fast...
+        self.speed_min = self.settings.asteroid_speed_min * gs_game.level // 2
+        self.speed_max = self.settings.asteroid_speed_max * gs_game.level // 2
+        if self.speed_min < 1:
+            self.speed_min = 1
+        if self.speed_max < 1:
+            self.speed_max = 1
+
+        self.speed = random.randint(self.speed_min, self.speed_max)
         self.angle = 0
         self.rotation_speed = random.uniform(-1, 1)  # Random rotation speed
 

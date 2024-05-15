@@ -4,6 +4,7 @@ from pygame import font
 class Scoreboard:
     def __init__(self, gs_game):
         self.settings = gs_game.settings
+        self.level = gs_game.level
         self.score = 0
         self.font = font.SysFont(self.settings.scoreboard_font_name, self.settings.scoreboard_font_size)
         self.color = self.settings.scoreboard_font_color
@@ -21,7 +22,8 @@ class Scoreboard:
         self.score = 0
 
     def display(self, screen):
-        score_text = self.font.render("Score: " + str(self.score), True, self.color)
+        score_text = self.font.render(f"Score: {str(self.score)} "
+                                      f"Level: {str(self.level)}", True, self.color)
         rect = score_text.get_rect()
         location = (10, 10)
         rect.x, rect.y = location
