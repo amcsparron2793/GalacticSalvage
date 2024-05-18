@@ -8,7 +8,9 @@ class Sounds:
         self.player_boom = mixer.Sound('../Misc_Project_Files/sounds/BoomPlayer.mp3')
         self.missed_asteroid = mixer.Sound('../Misc_Project_Files/sounds/MissedAsteroid.mp3')
         self.asteroid_boom = mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
+        self.GameOver = mixer.Sound('../Misc_Project_Files/sounds/GameOver.mp3')
         self.mx = mixer.find_channel()
+
         self._is_muted = None
         self.mute_symbol = image.load('../Misc_Project_Files/images/sound-off.png')
         self.mute_symbol = transform.scale_by(self.mute_symbol, 0.05)

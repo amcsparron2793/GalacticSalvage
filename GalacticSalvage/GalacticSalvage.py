@@ -27,21 +27,21 @@ class GalacticSalvage:
         # Initialize Pygame
         pygame.init()
         self.settings = Settings()
+        self.level = 1
 
         self.running = True
         self.player = Player(self)
-
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
 
         self.stars: List[Star] = []
+
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
-
         self._create_asteroids()
         # TODO: add lives (3 missed asteroids?)
 
@@ -74,6 +74,7 @@ class GalacticSalvage:
         elif event.key == pygame.K_LEFT:
             self.player.moving_left = False
 
+    # noinspection PyTypeChecker
     def _fire_bullet(self):
         """ Create a new bullet and add it to the bullets group. """
         if len(self.bullets) < self.settings.bullets_allowed:
@@ -111,7 +112,8 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                self.scoreboard.increase_score()
+                # now score goes up by the value of level
+                self.scoreboard.increase_score(self.level)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # FIXME: the explosion does not play in the right spot.
@@ -126,15 +128,31 @@ class GalacticSalvage:
         collisions = pygame.sprite.spritecollideany(self.player, self.asteroids)
 
         if collisions:
-            self.scoreboard.decrease_score(5)
-            self.mix.play(self.sounds.player_boom)
-            self.asteroids.empty()
-            self.player.remove()
-            self.player.center_ship()
-            self.player.biltme()
-            # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
-            self._create_asteroids()
+            if self.scoreboard.score >= 5:
+                self.scoreboard.decrease_score(5)
+            else:
+                self.scoreboard.score = 0
 
+            self.mix.play(self.sounds.player_boom)
+
+            if self.player.player_lives > 0:
+                self.player.player_lives -= 1
+                self.asteroids.empty()
+                self.player.remove()
+                self.player.center_ship()
+                self.player.biltme()
+                # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
+                self._create_asteroids()
+            else:
+                self.mix.play(self.sounds.player_boom)
+                while self.mix.get_busy():
+                    pass
+                self.mix.play(self.sounds.GameOver)
+                while self.mix.get_busy():
+                    pass
+                self.running = False
+
+    # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
         if len(self.asteroids) < 1:
@@ -146,9 +164,6 @@ class GalacticSalvage:
         # Update asteroids
         self.asteroids.update()
         for asteroid in self.asteroids.copy():
-            # asteroid.move()
-            # asteroid.draw(self.settings.screen)  # Draw the asteroid with rotation
-            # print("asteroid drawn")
             # Remove asteroids that go off-screen
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
@@ -203,6 +218,12 @@ class GalacticSalvage:
         # self.clock.tick(120)
         self.clock.tick(60)
 
+    def _check_level(self):
+        if self.scoreboard.score >= self.level * 10:
+            self.level += 1
+            self.scoreboard.level = self.level
+            print(f"LEVEL UP - Level {self.level}")
+
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
@@ -213,6 +234,7 @@ class GalacticSalvage:
             self._update_asteroids()
             self._UpdateStars()
             self._update_screen()
+            self._check_level()
         pygame.quit()
 
 

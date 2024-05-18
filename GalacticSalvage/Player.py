@@ -35,6 +35,7 @@ class Player(Sprite):
         self.image = transform.scale_by(self.image, 0.15)
         self.rect = self.image.get_rect()
         self.rect.midbottom = self.screen_rect.midbottom
+        self.player_lives = self.settings.starting_lives
 
         self.width = 50
         self.height = 50
