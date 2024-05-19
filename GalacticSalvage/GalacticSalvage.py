@@ -19,6 +19,7 @@ from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
 from Button import Button
+from PowerupsSpecials import BrokenShip
 
 
 class GalacticSalvage:
@@ -37,6 +38,7 @@ class GalacticSalvage:
 
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
 
         self.stars: List[Star] = []
 
@@ -173,6 +175,21 @@ class GalacticSalvage:
                 self.scoreboard.decrease_score()
                 self._create_asteroids()
 
+    def _create_broken_ship(self):
+        broken_ship = BrokenShip(self)
+        self.broken_ships.add(broken_ship)
+
+    def _update_broken_ship(self):
+        self.broken_ships.update()
+        for ship in self.broken_ships.copy():
+            # Remove asteroids that go off-screen
+            if ship.rect.bottom >= self.settings.screen.get_height():
+                self.broken_ships.remove(ship)
+                # self.mix.play(self.sounds.missed_asteroid)
+                # self.scoreboard.decrease_score()
+                # self._create_asteroids()
+    # TODO: check_broken_ship_player_collisions
+
     def _UpdateStars(self):
         for star in self.stars:
             star.draw()
@@ -197,11 +214,16 @@ class GalacticSalvage:
 
     def _update_screen(self):
         """ Update images on the screen and flip to the new screen. """
+        # TODO: refine this
+        if random.randint(1, 500) == 1:
+            self._create_broken_ship()
+
         self.settings.screen.fill(self.settings.bg_color)
         self.player.biltme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.asteroids.draw(self.settings.screen)
+        self.broken_ships.draw(self.settings.screen)
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
@@ -237,6 +259,7 @@ class GalacticSalvage:
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
+                self._update_broken_ship()
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
