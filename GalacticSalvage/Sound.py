@@ -10,6 +10,7 @@ class Sounds:
         self.asteroid_boom = mixer.Sound('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
         self.GameOver = mixer.Sound('../Misc_Project_Files/sounds/GameOver.mp3')
         self.LevelUp = mixer.Sound('../Misc_Project_Files/sounds/LevelUp.mp3')
+        self.SavedBrokenShip = mixer.Sound('../Misc_Project_Files/sounds/SavedBrokenShip.mp3')
         self.mx = mixer.find_channel()
 
         self._is_muted = None

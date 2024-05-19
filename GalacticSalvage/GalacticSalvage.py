@@ -7,10 +7,11 @@ from abandoned space stations and derelict ships.
 Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
-import random
-from typing import List
 
 import pygame
+
+import random
+from typing import List
 
 from Player import Player, Bullet
 from Asteroid import Asteroid
@@ -118,8 +119,7 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                # now score goes up by the value of level
-                self.scoreboard.increase_score(self.level)
+                self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
@@ -165,7 +165,7 @@ class GalacticSalvage:
         if collisions:
             self.scoreboard.increase_score(10)
             self.broken_ships.remove(collisions)
-            self.mix.play(self.sounds.LevelUp)
+            self.mix.play(self.sounds.SavedBrokenShip)
 
     # noinspection PyTypeChecker
     def _create_asteroids(self):
@@ -196,10 +196,8 @@ class GalacticSalvage:
             # Remove asteroids that go off-screen
             if ship.rect.bottom >= self.settings.screen.get_height():
                 self.broken_ships.remove(ship)
-                # self.mix.play(self.sounds.missed_asteroid)
-                # self.scoreboard.decrease_score()
-                # self._create_asteroids()
-    # TODO: check_broken_ship_player_collisions
+                self.scoreboard.decrease_score(5)
+                self.mix.play(self.sounds.missed_asteroid)
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -226,15 +224,18 @@ class GalacticSalvage:
     def _update_screen(self):
         """ Update images on the screen and flip to the new screen. """
         # TODO: refine this
-        if random.randint(1, 500) == 1:
+        if random.randint(1, 1000) == 1:
             self._create_broken_ship()
 
         self.settings.screen.fill(self.settings.bg_color)
         self.player.biltme()
+
+        for b_ship in self.broken_ships.sprites():
+            b_ship.draw(self.settings.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
         self.asteroids.draw(self.settings.screen)
-        self.broken_ships.draw(self.settings.screen)
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
