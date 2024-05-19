@@ -20,7 +20,7 @@ from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
 from Button import Button
-from PowerupsSpecials import BrokenShip
+from PowerupsSpecials import BrokenShip, ExtraLife
 
 
 class GalacticSalvage:
@@ -40,6 +40,7 @@ class GalacticSalvage:
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.broken_ships = pygame.sprite.Group()
+        self.extra_lives = pygame.sprite.Group()
 
         self.stars: List[Star] = []
 
@@ -49,6 +50,10 @@ class GalacticSalvage:
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
         self._create_asteroids()
+
+        self.missed_ship_penalty = 3
+        self.missed_asteroid_penalty = 1
+        self.player_asteroid_hit_penalty = 5
 
     def _check_keydown_events(self, event):
         """ Respond to key presses. """
@@ -122,8 +127,6 @@ class GalacticSalvage:
                 self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
-                # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
-                self._create_asteroids()
 
     def _check_asteroid_ship_collisions(self):
         """ Respond to ship asteroid collisions. """
@@ -132,8 +135,8 @@ class GalacticSalvage:
         collisions = pygame.sprite.spritecollideany(self.player, self.asteroids)
 
         if collisions:
-            if self.scoreboard.score >= 5:
-                self.scoreboard.decrease_score(5)
+            if self.scoreboard.score >= self.player_asteroid_hit_penalty:
+                self.scoreboard.decrease_score(self.player_asteroid_hit_penalty)
             else:
                 self.scoreboard.score = 0
 
@@ -146,7 +149,6 @@ class GalacticSalvage:
                 self.player.center_ship()
                 self.player.biltme()
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
-                self._create_asteroids()
             else:
                 self.mix.play(self.sounds.player_boom)
                 while self.mix.get_busy():
@@ -167,6 +169,17 @@ class GalacticSalvage:
             self.broken_ships.remove(collisions)
             self.mix.play(self.sounds.SavedBrokenShip)
 
+    def _check_extra_life_ship_collisions(self):
+        """ Respond to ship broken ship collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.extra_lives)
+
+        if collisions:
+            self.player.player_lives += 1
+            self.extra_lives.remove(collisions)
+            self.mix.play(self.sounds.SavedBrokenShip)
+
     # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
@@ -183,7 +196,7 @@ class GalacticSalvage:
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
                 self.mix.play(self.sounds.missed_asteroid)
-                self.scoreboard.decrease_score()
+                self.scoreboard.decrease_score(self.missed_asteroid_penalty)
                 self._create_asteroids()
 
     def _create_broken_ship(self):
@@ -196,8 +209,18 @@ class GalacticSalvage:
             # Remove asteroids that go off-screen
             if ship.rect.bottom >= self.settings.screen.get_height():
                 self.broken_ships.remove(ship)
-                self.scoreboard.decrease_score(5)
+                self.scoreboard.decrease_score(self.missed_ship_penalty)
                 self.mix.play(self.sounds.missed_asteroid)
+
+    def _create_extra_life(self):
+        extra_life = ExtraLife(self)
+        self.extra_lives.add(extra_life)
+
+    def _update_extra_life(self):
+        self.extra_lives.update()
+        for life in self.extra_lives.copy():
+            if life.rect.bottom >= self.settings.screen.get_height():
+                self.extra_lives.remove(life)
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -206,7 +229,7 @@ class GalacticSalvage:
             star.OffscreenReset()
         return self.stars
 
-    def _check_events(self):
+    def _check_system_events(self):
         """ Respond to key presses and mouse events. """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -221,21 +244,30 @@ class GalacticSalvage:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
 
-    def _update_screen(self):
-        """ Update images on the screen and flip to the new screen. """
-        # TODO: refine this
-        if random.randint(1, 1000) == 1:
+    def _get_random_events(self):
+        if random.randint(1, 2000) == 1:
             self._create_broken_ship()
+        if random.randint(1, 4000) == 1:
+            self._create_extra_life()
+        if random.randint(1, 100) == 1:
+            self._create_asteroids()
 
-        self.settings.screen.fill(self.settings.bg_color)
-        self.player.biltme()
-
+    def _draw_sprites(self):
+        for life in self.extra_lives.sprites():
+            life.draw(self.settings.screen)
         for b_ship in self.broken_ships.sprites():
             b_ship.draw(self.settings.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-
         self.asteroids.draw(self.settings.screen)
+
+    def _update_screen(self):
+        """ Update images on the screen and flip to the new screen. """
+        self._get_random_events()
+        self.settings.screen.fill(self.settings.bg_color)
+        self.player.biltme()
+
+        self._draw_sprites()
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
@@ -265,14 +297,16 @@ class GalacticSalvage:
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
-            self._check_events()
+            self._check_system_events()
             if self.game_active:
                 self._check_asteroid_ship_collisions()
                 self._check_broken_ship_ship_collisions()
+                self._check_extra_life_ship_collisions()
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
                 self._update_broken_ship()
+                self._update_extra_life()
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
