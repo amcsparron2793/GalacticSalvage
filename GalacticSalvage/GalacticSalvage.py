@@ -156,6 +156,17 @@ class GalacticSalvage:
                     pass
                 self.running = False
 
+    def _check_broken_ship_ship_collisions(self):
+        """ Respond to ship broken ship collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.broken_ships)
+
+        if collisions:
+            self.scoreboard.increase_score(10)
+            self.broken_ships.remove(collisions)
+            self.mix.play(self.sounds.LevelUp)
+
     # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
@@ -256,6 +267,7 @@ class GalacticSalvage:
             self._check_events()
             if self.game_active:
                 self._check_asteroid_ship_collisions()
+                self._check_broken_ship_ship_collisions()
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
