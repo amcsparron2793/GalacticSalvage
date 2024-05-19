@@ -7,10 +7,11 @@ from abandoned space stations and derelict ships.
 Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
-import random
-from typing import List
 
 import pygame
+
+import random
+from typing import List
 
 from Player import Player, Bullet
 from Asteroid import Asteroid
@@ -19,6 +20,7 @@ from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
 from Button import Button
+from PowerupsSpecials import BrokenShip
 
 
 class GalacticSalvage:
@@ -37,6 +39,7 @@ class GalacticSalvage:
 
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
 
         self.stars: List[Star] = []
 
@@ -116,8 +119,7 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                # now score goes up by the value of level
-                self.scoreboard.increase_score(self.level)
+                self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
@@ -154,6 +156,17 @@ class GalacticSalvage:
                     pass
                 self.running = False
 
+    def _check_broken_ship_ship_collisions(self):
+        """ Respond to ship broken ship collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.broken_ships)
+
+        if collisions:
+            self.scoreboard.increase_score(10)
+            self.broken_ships.remove(collisions)
+            self.mix.play(self.sounds.SavedBrokenShip)
+
     # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
@@ -172,6 +185,19 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.missed_asteroid)
                 self.scoreboard.decrease_score()
                 self._create_asteroids()
+
+    def _create_broken_ship(self):
+        broken_ship = BrokenShip(self)
+        self.broken_ships.add(broken_ship)
+
+    def _update_broken_ship(self):
+        self.broken_ships.update()
+        for ship in self.broken_ships.copy():
+            # Remove asteroids that go off-screen
+            if ship.rect.bottom >= self.settings.screen.get_height():
+                self.broken_ships.remove(ship)
+                self.scoreboard.decrease_score(5)
+                self.mix.play(self.sounds.missed_asteroid)
 
     def _UpdateStars(self):
         for star in self.stars:
@@ -197,10 +223,18 @@ class GalacticSalvage:
 
     def _update_screen(self):
         """ Update images on the screen and flip to the new screen. """
+        # TODO: refine this
+        if random.randint(1, 1000) == 1:
+            self._create_broken_ship()
+
         self.settings.screen.fill(self.settings.bg_color)
         self.player.biltme()
+
+        for b_ship in self.broken_ships.sprites():
+            b_ship.draw(self.settings.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
         self.asteroids.draw(self.settings.screen)
 
         # Draw the score information
@@ -234,9 +268,11 @@ class GalacticSalvage:
             self._check_events()
             if self.game_active:
                 self._check_asteroid_ship_collisions()
+                self._check_broken_ship_ship_collisions()
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
+                self._update_broken_ship()
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
