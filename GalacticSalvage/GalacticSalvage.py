@@ -34,7 +34,6 @@ class GalacticSalvage:
         self.game_active = False
         self.play_button = Button(self, "Start")
         self.player = Player(self)
-        # TODO: render these on screen
 
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
@@ -227,6 +226,7 @@ class GalacticSalvage:
             self.level += 1
             self.scoreboard.level = self.level
             print(f"LEVEL UP - Level {self.level}")
+            self.mix.play(self.sounds.LevelUp)
 
     def run_game(self):
         """start the main loop for the game"""
