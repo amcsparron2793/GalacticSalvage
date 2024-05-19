@@ -18,6 +18,7 @@ from Star import Star
 from Scoreboard import Scoreboard, FPSMon
 from Settings import Settings
 from Sound import Sounds
+from Button import Button
 
 
 class GalacticSalvage:
@@ -30,7 +31,10 @@ class GalacticSalvage:
         self.level = 1
 
         self.running = True
+        self.game_active = False
+        self.play_button = Button(self, "Start")
         self.player = Player(self)
+
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
@@ -43,7 +47,6 @@ class GalacticSalvage:
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
         self._create_asteroids()
-        # TODO: add lives (3 missed asteroids?)
 
     def _check_keydown_events(self, event):
         """ Respond to key presses. """
@@ -57,10 +60,12 @@ class GalacticSalvage:
 
         elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
             # self.sb.write_highscore()
-            # if q or esc is pressed quit the game
-            self.running = False
+            # if q or esc is pressed pause the game
+            self.game_active = False
+            if event.key == pygame.K_q and not self.game_active:
+                self.running = False
 
-        elif event.key == pygame.K_SPACE: #and self.stats.game_active is True:
+        elif event.key == pygame.K_SPACE and self.game_active is True:
             self._fire_bullet()
         elif event.key == pygame.K_F12:
             self.settings.ToggleFullscreen()
@@ -73,6 +78,14 @@ class GalacticSalvage:
             self.player.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.player.moving_left = False
+
+    def _check_play_button(self, mouse_pos):
+        """ Start a new game when the player presses play. """
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            # reset the game settings
+            # reset the game statistics
+            self.game_active = True
 
     # noinspection PyTypeChecker
     def _fire_bullet(self):
@@ -185,6 +198,7 @@ class GalacticSalvage:
                 pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -210,8 +224,8 @@ class GalacticSalvage:
             self.sounds.draw_mute_img(self.settings.screen)
 
         # draw the play button if the game is inactive
-        """if not self.stats.game_active:
-            self.play_button.draw_button()"""
+        if not self.game_active:
+            self.play_button.draw_button()
 
         # Make the most recently drawn screen visible
         pygame.display.flip()
@@ -223,18 +237,20 @@ class GalacticSalvage:
             self.level += 1
             self.scoreboard.level = self.level
             print(f"LEVEL UP - Level {self.level}")
+            self.mix.play(self.sounds.LevelUp)
 
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
             self._check_events()
-            self._check_asteroid_ship_collisions()
-            self.player.update()
-            self._update_bullets()
-            self._update_asteroids()
-            self._UpdateStars()
+            if self.game_active:
+                self._check_asteroid_ship_collisions()
+                self.player.update()
+                self._update_bullets()
+                self._update_asteroids()
+                self._UpdateStars()
+                self._check_level()
             self._update_screen()
-            self._check_level()
         pygame.quit()
 
 
