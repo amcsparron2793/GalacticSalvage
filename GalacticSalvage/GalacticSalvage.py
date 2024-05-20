@@ -56,6 +56,7 @@ class GalacticSalvage:
         self.missed_ship_penalty = 3
         self.missed_asteroid_penalty = 1
         self.player_asteroid_hit_penalty = 5
+        self.player_name = 'Andrew'
 
     def _check_keydown_events(self, event):
         """ Respond to key presses. """
@@ -314,7 +315,7 @@ class GalacticSalvage:
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
-        self.leaderboard.add_entry('Andrew')
+        self.leaderboard.add_entry(self.player_name)
         pygame.quit()
 
 
