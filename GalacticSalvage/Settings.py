@@ -62,6 +62,7 @@ class Settings:
         self.show_fps = self.config.getboolean('DEFAULT', 'show_fps')
 
         self.sound_muted = self.config.getboolean('DEFAULT', 'sound_muted')
+        self.leaderboard_db_location = self.config.get('LEADERBOARD', 'database_file_path')
 
     @staticmethod
     def ToggleFullscreen():

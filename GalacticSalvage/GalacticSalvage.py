@@ -21,6 +21,7 @@ from Settings import Settings
 from Sound import Sounds
 from Button import Button
 from PowerupsSpecials import BrokenShip, ExtraLife
+from Leaderboard import Leaderboard
 
 
 class GalacticSalvage:
@@ -30,6 +31,7 @@ class GalacticSalvage:
         # Initialize Pygame
         pygame.init()
         self.settings = Settings()
+        self.leaderboard = Leaderboard(self)
         self.level = 1
 
         self.running = True
@@ -156,6 +158,7 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.GameOver)
                 while self.mix.get_busy():
                     pass
+                self.leaderboard.add_entry('Andrew')
                 self.running = False
 
     def _check_broken_ship_ship_collisions(self):

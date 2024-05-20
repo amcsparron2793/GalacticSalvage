@@ -46,6 +46,10 @@ class GsConfig(BetterConfig):
                         'asteroid_scale_max': 0.08,
                         'asteroid_speed_cap': 12,
                         'ignore_speed_cap': False
+                    },
+                'LEADERBOARD':
+                    {
+                        'database_file_path': '../Misc_Project_Files/GS_Leaderboard.db'
                     }
             }
         ]
