@@ -10,6 +10,7 @@ class Leaderboard:
         self.cxn, self.csr = self.sql.GetConnectionAndCursor()
         self._leaderboard = None
         self._top_ten_leaderboard = None
+        self._current_highscore = None
 
     @property
     def leaderboard(self) -> List[dict]:
@@ -27,6 +28,13 @@ class Leaderboard:
         self.sql.Query(q_str)
         self._top_ten_leaderboard = self.sql.list_dict_results
         return self._top_ten_leaderboard
+
+    @property
+    def current_highscore(self) -> int:
+        q_str = f"""select max(score) from Leaderboard"""
+        self.sql.Query(q_str)
+        self._current_highscore = self.sql.query_results[0][0]
+        return self._current_highscore
 
     def _get_player_id(self, player_name):
         q_str = f"""select id from Players where lower(player_name) = '{player_name}' """

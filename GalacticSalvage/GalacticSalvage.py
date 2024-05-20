@@ -159,8 +159,7 @@ class GalacticSalvage:
                 while self.mix.get_busy():
                     pass
                 # TODO: need get player name
-                # TODO: show leaderboard/highscore
-                self.leaderboard.add_entry('Andrew')
+                # TODO: show leaderboard
                 self.running = False
 
     def _check_broken_ship_ship_collisions(self):
@@ -315,6 +314,7 @@ class GalacticSalvage:
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
+        self.leaderboard.add_entry('Andrew')
         pygame.quit()
 
 

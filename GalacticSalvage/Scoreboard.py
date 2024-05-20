@@ -6,6 +6,7 @@ class Scoreboard:
         self.settings = gs_game.settings
         self.level = gs_game.level
         self.player = gs_game.player
+        self.leaderboard = gs_game.leaderboard
         self.score = 0
         self.font = font.SysFont(self.settings.scoreboard_font_name,
                                  self.settings.scoreboard_font_size)
@@ -27,7 +28,14 @@ class Scoreboard:
         self.score = 0
 
     def _score_text_prep(self):
-        s_text = self.font.render(f"Score: {str(self.score)} Level {str(self.level)}", True, self.color)
+        if self.score > self.leaderboard.current_highscore:
+            current_highscore = self.score
+        else:
+            current_highscore = self.leaderboard.current_highscore
+
+        s_text = self.font.render(f"Score: {str(self.score)} Level: {str(self.level)} "
+                                  f"Highscore: {str(current_highscore)}",
+                                  True, self.color)
         s_text_rect = s_text.get_rect()
         s_text_location = (10, 10)
         return s_text, s_text_rect, s_text_location
