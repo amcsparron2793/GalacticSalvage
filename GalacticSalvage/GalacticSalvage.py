@@ -158,6 +158,8 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.GameOver)
                 while self.mix.get_busy():
                     pass
+                # TODO: need get player name
+                # TODO: show leaderboard/highscore
                 self.leaderboard.add_entry('Andrew')
                 self.running = False
 
