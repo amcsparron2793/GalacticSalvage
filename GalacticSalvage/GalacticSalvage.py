@@ -116,7 +116,7 @@ class GalacticSalvage:
         self.missed_ship_penalty = 3
         self.missed_asteroid_penalty = 1
         self.player_asteroid_hit_penalty = 5
-        self.player_name = 'Andrew'
+        self.player_name = self.leaderboard.get_player_name()
 
     def _check_keydown_events(self, event):
         """ Respond to key presses. """
@@ -219,7 +219,6 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.game_over)
                 while self.mix.get_busy():
                     pass
-                # TODO: need get player name
                 # TODO: show leaderboard
                 self.running = False
 
