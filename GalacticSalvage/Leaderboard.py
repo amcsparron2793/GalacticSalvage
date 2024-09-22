@@ -64,9 +64,7 @@ class Leaderboard:
     @property
     def top_ten_leaderboard(self):
         q_str = f"""select * 
-                    from FullLeaderboard 
-                    order by score desc
-                    limit 10"""
+                    from TopTenLeaderboard"""
         self.sql.Query(q_str)
         self._top_ten_leaderboard = self.sql.list_dict_results
         return self._top_ten_leaderboard
