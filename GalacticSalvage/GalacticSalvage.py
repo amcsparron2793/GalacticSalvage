@@ -24,6 +24,54 @@ from PowerupsSpecials import BrokenShip, ExtraLife
 
 
 class GalacticSalvage:
+    """
+    GalacticSalvage
+
+    This class represents the main game object in the Galactic Salvage game.
+    It manages the game state, including player input, game objects, and game logic.
+
+    Attributes:
+        clock: The Pygame clock object used to manage the game's frame rate.
+        settings: An instance of the Settings class that stores the game's settings.
+        level: The current level of the game.
+        running: A boolean indicating whether the game is currently running.
+        game_active: A boolean indicating whether the game is currently active.
+        play_button: An instance of the Button class representing the play button.
+        player: An instance of the Player class representing the player's ship.
+        bullets: A Pygame sprite Group containing the bullets fired by the player's ship.
+        asteroids: A Pygame sprite Group containing the asteroids in the game.
+        broken_ships: A Pygame sprite Group containing the broken ships in the game.
+        extra_lives: A Pygame sprite Group containing the extra lives in the game.
+        stars: A list of Star objects representing the background stars in the game.
+        scoreboard: An instance of the Scoreboard class that manages the game's scoreboard.
+        fps: An instance of the FPSMon class that displays the game's frame rate.
+        sounds: An instance of the Sounds class that manages the game's sound effects.
+        mix: The Pygame Mixer object used to play sound effects.
+        missed_ship_penalty: The penalty score for missing a broken ship.
+        missed_asteroid_penalty: The penalty score for missing an asteroid.
+        player_asteroid_hit_penalty: The penalty score for the player's ship colliding with an asteroid.
+
+    Methods:
+        __init__(self): Initializes the GalacticSalvage object and sets up the game.
+        _check_keydown_events(self, event): Responds to key press events by performing the associated actions.
+        _check_keyup_events(self, event): Responds to key release events by performing the associated actions.
+        _check_play_button(self, mouse_pos): Starts a new game when the player presses the play button.
+        _fire_bullet(self): Creates a new bullet and adds it to the bullets group.
+        _update_bullets(self): Updates the position of bullets and removes any old bullets.
+        _check_bullet_asteroid_collisions(self): Responds to collisions between bullets and asteroids by removing them from the game.
+        _check_asteroid_ship_collisions(self): Responds to collisions between the player's ship and asteroids by performing the associated actions.
+        _check_broken_ship_ship_collisions(self): Responds to collisions between the player's ship and broken ships by performing the associated actions.
+        _check_extra_life_ship_collisions(self): Responds to collisions between the player's ship and extra lives by performing the associated actions.
+        _create_asteroids(self): Creates asteroids and adds them to the sprite groups.
+        _update_asteroids(self): Updates the position of asteroids and removes any that go off-screen.
+        _create_broken_ship(self): Creates a new broken ship and adds it to the broken ships group.
+        _update_broken_ship(self): Updates the position of broken ships and removes any that go off-screen.
+        _create_extra_life(self): Creates a new extra life and adds it to the extra lives group.
+        _update_extra_life(self): Updates the position of extra lives and removes any that go off-screen.
+        _UpdateStars(self): Updates the position of the background stars.
+        _check_system_events(self): Responds to system events such as quitting the game or clicking the play button.
+        _get_random_events(self): Generates random events such as creating a broken ship or extra life.
+    """
     clock = pygame.time.Clock()
 
     def __init__(self):
