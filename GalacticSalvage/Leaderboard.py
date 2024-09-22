@@ -136,6 +136,15 @@ class Leaderboard:
 
         return player_name
 
-
+    def console_display_leaderboard(self):
+        """
+        Prints the leaderboard in a formatted manner.
+        """
+        print("Leaderboard:")
+        print("----------------------------")
+        # assuming _top_ten_leaderboard holds the top 10 players' names and scores
+        leaderboard = [x.items() for x in self.top_ten_leaderboard]
+        for rank, (player, date, score, level) in enumerate(leaderboard, start=1):
+            print(f"{rank}. {date[0]}: {date[1]} - {player[0]}: {player[1]} - {score[0]}: {score[1]} - {level[0]}: {level[1]}")
 
 

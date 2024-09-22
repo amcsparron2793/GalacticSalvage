@@ -375,6 +375,7 @@ class GalacticSalvage:
                 self._check_level()
             self._update_screen()
         self.leaderboard.add_entry(self.player_name)
+        self.leaderboard.console_display_leaderboard()
         pygame.quit()
 
 
