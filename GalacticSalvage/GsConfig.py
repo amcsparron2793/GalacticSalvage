@@ -1,8 +1,34 @@
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
-from utils import ColorConverter
+try:
+    from .utils import ColorConverter
+except ImportError:
+    from utils import ColorConverter
 
 
 class GsConfig(BetterConfig):
+    """
+    Class GsConfig
+
+    This class is a subclass of BetterConfig. It represents a game configuration object that is used to store and retrieve configuration settings for the game.
+
+    Constructor:
+        def __init__(self, config_filename, config_dir, config_list_dict=None, *args, **kwargs):
+            Constructs a GsConfig object with the specified configuration file name, directory, and optional configuration list dictionary. If a configuration list dictionary is not provided, the default configuration list will be used.
+
+    Attributes:
+        config_list_dict (list): A list of dictionaries representing configuration settings for different aspects of the game.
+
+    Methods: None
+
+    Example usage:
+        # Create a GsConfig object with default configuration
+        config = GsConfig("config.ini", "/path/to/config")
+
+        # Retrieve a configuration setting
+        safe_mode = config.config_list_dict[0]['DEFAULT']['safe_mode']
+
+    Note: The GsConfig class inherits all attributes and methods from the BetterConfig class.
+    """
     def __init__(self, config_filename, config_dir, config_list_dict=None, *args, **kwargs):
         super().__init__(config_filename, config_dir, config_list_dict, *args, **kwargs)
 

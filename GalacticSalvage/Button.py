@@ -1,8 +1,43 @@
 from pygame import font, Rect
-from utils import ColorConverter
+try:
+    from .utils import ColorConverter
+except ImportError:
+    from utils import ColorConverter
 
 
 class Button:
+    """
+    This module defines a Button class that can be used to create buttons in a graphical user interface (GUI).
+
+    Class Button:
+        This class represents a button in the GUI.
+
+        __init__(self, gs_game, msg, **kwargs):
+            Initializes the Button object with the given parameters.
+
+            - gs_game: The GameSettings object that contains the screen settings.
+            - msg: The text message to be displayed on the button.
+            - kwargs: Additional keyword arguments to customize the button appearance.
+
+            If kwargs is provided, the following keyword arguments can be used:
+            - width: The width of the button.
+            - height: The height of the button.
+            - button_color_hex: The hexadecimal color code for the button color.
+            - text_color_hex: The hexadecimal color code for the text color.
+            - font_name: The name of the font to be used for the button text.
+            - font_size: The size of the font to be used for the button text.
+
+        _prep_msg(self, msg):
+            Turn the given message into a rendered image and center the text on the button.
+
+            - msg: The text message to be rendered.
+
+        draw_button(self):
+            Draw the button on the screen.
+
+            The button is drawn as a filled rectangle with the specified color, and the text message
+            is displayed on top of the button.
+    """
     def __init__(self, gs_game, msg, **kwargs):
         """ Init button attributes. """
         self.screen = gs_game.settings.screen

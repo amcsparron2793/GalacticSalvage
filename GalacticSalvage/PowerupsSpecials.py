@@ -4,6 +4,37 @@ from random import randint
 
 
 class ExtraLife(Sprite):
+    """
+    This is the documentation for the ExtraLife class.
+
+    class ExtraLife(Sprite):
+        def __init__(self, gs_game):
+            Initializes a new instance of the ExtraLife class.
+
+            Parameters:
+            - gs_game (object): An instance of the GameSettings class.
+
+        @staticmethod
+        def _load_img_scale_and_rotate(img_path):
+            Loads an image from the given path, scales and rotates it.
+
+            Parameters:
+            - img_path (str): The path to the image file.
+
+            Returns:
+            - image_surface (Surface): The scaled and rotated image.
+
+        def update(self):
+            Updates the location of the ExtraLife object.
+
+        Parameters: None
+
+        def draw(self, screen):
+            Draws the ExtraLife object on the screen.
+
+            Parameters:
+            - screen (Surface): The screen surface to draw on.
+    """
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
@@ -31,6 +62,24 @@ class ExtraLife(Sprite):
 
 
 class BrokenShip(Sprite):
+    """
+        This class represents a broken ship in a game. It is a subclass of the `Sprite` class.
+
+        Attributes:
+            settings (Settings): An instance of the `Settings` class that stores game settings.
+            image (Surface): The image of the broken ship.
+            rect (Rect): The rectangular area occupied by the broken ship.
+            speed (int): The speed at which the broken ship moves.
+            text (str): The text to be displayed alongside the broken ship.
+            font (Font): The font used to render the text.
+
+        Methods:
+            __init__(self, gs_game): Initializes a new instance of the `BrokenShip` class.
+            _load_img_scale_and_rotate(img_path): Loads, scales, and rotates the image of the broken ship.
+            update(self): Updates the location of the broken ship.
+            draw(self, screen): Draws the broken ship on the screen along with the associated text.
+
+    """
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
