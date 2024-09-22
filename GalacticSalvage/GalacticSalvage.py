@@ -13,14 +13,14 @@ import pygame
 import random
 from typing import List
 
-from Player import Player, Bullet
-from Asteroid import Asteroid
-from Star import Star
-from Scoreboard import Scoreboard, FPSMon
-from Settings import Settings
-from Sound import Sounds
-from Button import Button
-from PowerupsSpecials import BrokenShip, ExtraLife
+from GalacticSalvage.Player import Player, Bullet
+from GalacticSalvage.Asteroid import Asteroid
+from GalacticSalvage.Star import Star
+from GalacticSalvage.Scoreboard import Scoreboard, FPSMon
+from GalacticSalvage.Settings import Settings
+from GalacticSalvage.Sound import Sounds
+from GalacticSalvage.Button import Button
+from GalacticSalvage.PowerupsSpecials import BrokenShip, ExtraLife
 
 
 class GalacticSalvage:
@@ -125,7 +125,7 @@ class GalacticSalvage:
         elif event.key == pygame.K_F12:
             self.settings.ToggleFullscreen()
         elif event.key == pygame.K_m:
-            self.sounds.ToggleMute()
+            self.sounds.toggle_mute()
 
     def _check_keyup_events(self, event):
         """ Respond to key releases. """
@@ -201,7 +201,7 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.player_boom)
                 while self.mix.get_busy():
                     pass
-                self.mix.play(self.sounds.GameOver)
+                self.mix.play(self.sounds.game_over)
                 while self.mix.get_busy():
                     pass
                 self.running = False
@@ -215,7 +215,7 @@ class GalacticSalvage:
         if collisions:
             self.scoreboard.increase_score(10)
             self.broken_ships.remove(collisions)
-            self.mix.play(self.sounds.SavedBrokenShip)
+            self.mix.play(self.sounds.saved_broken_ship)
 
     def _check_extra_life_ship_collisions(self):
         """ Respond to ship broken ship collisions. """
@@ -226,7 +226,7 @@ class GalacticSalvage:
         if collisions:
             self.player.player_lives += 1
             self.extra_lives.remove(collisions)
-            self.mix.play(self.sounds.SavedBrokenShip)
+            self.mix.play(self.sounds.saved_broken_ship)
 
     # noinspection PyTypeChecker
     def _create_asteroids(self):
@@ -340,7 +340,7 @@ class GalacticSalvage:
             self.level += 1
             self.scoreboard.level = self.level
             print(f"LEVEL UP - Level {self.level}")
-            self.mix.play(self.sounds.LevelUp)
+            self.mix.play(self.sounds.level_up)
 
     def run_game(self):
         """start the main loop for the game"""

@@ -1,5 +1,5 @@
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
-from utils import ColorConverter
+from GalacticSalvage.utils import ColorConverter
 
 
 class GsConfig(BetterConfig):
