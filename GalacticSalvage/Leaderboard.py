@@ -136,15 +136,24 @@ class Leaderboard:
 
         return player_name
 
+    def get_final_leaderboard_strings(self):
+        final_strings = []
+        # assuming top_ten_leaderboard holds the top 10 players' names and scores
+        leaderboard_info = [x.items() for x in self.top_ten_leaderboard]
+        for rank, (player, date, score, level) in enumerate(leaderboard_info, start=1):
+            final_string = (f"{rank}. {date[0]}: {date[1]} - {player[0]}: {player[1]} "
+                            f"- {score[0]}: {score[1]} - {level[0]}: {level[1]}")
+            final_strings.append(final_string)
+        return final_strings
+
     def console_display_leaderboard(self):
         """
         Prints the leaderboard in a formatted manner.
         """
         print("Leaderboard:")
         print("----------------------------")
-        # assuming _top_ten_leaderboard holds the top 10 players' names and scores
-        leaderboard = [x.items() for x in self.top_ten_leaderboard]
-        for rank, (player, date, score, level) in enumerate(leaderboard, start=1):
-            print(f"{rank}. {date[0]}: {date[1]} - {player[0]}: {player[1]} - {score[0]}: {score[1]} - {level[0]}: {level[1]}")
+        for entry in self.get_final_leaderboard_strings():
+            print(entry)
+
 
 
