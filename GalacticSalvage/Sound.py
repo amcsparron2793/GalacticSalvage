@@ -2,6 +2,28 @@ from pygame import mixer, image, transform
 
 
 class Sounds:
+    """
+    This module contains the `Sounds` class, which is responsible for handling the game's sound effects.
+
+    Attributes:
+        settings (Settings): The game settings object.
+        blaster (Sound): The sound effect for the blaster shooting.
+        player_boom (Sound): The sound effect for the player's ship explosion.
+        missed_asteroid (Sound): The sound effect for a missed asteroid.
+        asteroid_boom (Sound): The sound effect for an asteroid explosion.
+        GameOver (Sound): The sound effect for the game over screen.
+        LevelUp (Sound): The sound effect for leveling up.
+        SavedBrokenShip (Sound): The sound effect for saving a broken ship.
+        mx (Channel): The audio channel used for playing the sounds.
+
+    Methods:
+        is_muted: A property that returns whether the sound is muted or not.
+        ToggleMute: Toggles the mute state of the sound.
+        _mute: Mutes the sound.
+        _unmute: Unmutes the sound.
+        draw_mute_img: Draws the mute image on the screen.
+
+    """
     def __init__(self, gs_game):
         self.settings = gs_game.settings
         self.blaster = mixer.Sound('../Misc_Project_Files/sounds/blaster.mp3')

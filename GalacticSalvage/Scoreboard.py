@@ -2,6 +2,18 @@ from pygame import font, image, transform
 
 
 class Scoreboard:
+    """
+    Class to manage the scoreboard in a game.
+
+    Attributes:
+        settings (GameSettings): The game settings object.
+        level (int): The current level of the game.
+        player (Player): The player object in the game.
+        score (int): The current score of the player.
+        font (pygame.font.Font): The font used to render the scoreboard text.
+        color (tuple): The color of the scoreboard text.
+        player_lives_image (pygame.Surface): The image representing the player lives.
+    """
     def __init__(self, gs_game):
         self.settings = gs_game.settings
         self.level = gs_game.level
@@ -66,6 +78,23 @@ class Scoreboard:
 
 
 class FPSMon:
+    """
+    This module contains the `FPSMon` class, which is responsible for displaying the frames per second (FPS) on the game screen.
+
+    Classes:
+        - FPSMon
+
+    Methods:
+        - __init__(self, gs_game)
+        - render_fps(self, screen)
+
+    Attributes:
+        - settings: The game's settings object.
+        - clock: The game's clock object.
+        - font: The font to be used for rendering the FPS.
+        - color: The color of the FPS text.
+
+    """
     def __init__(self, gs_game):
         self.settings = gs_game.settings
         self.clock = gs_game.clock
