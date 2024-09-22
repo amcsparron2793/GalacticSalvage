@@ -13,14 +13,14 @@ import pygame
 import random
 from typing import List
 
-from GalacticSalvage.Player import Player, Bullet
-from GalacticSalvage.Asteroid import Asteroid
-from GalacticSalvage.Star import Star
-from GalacticSalvage.Scoreboard import Scoreboard, FPSMon
-from GalacticSalvage.Settings import Settings
-from GalacticSalvage.Sound import Sounds
-from GalacticSalvage.Button import Button
-from GalacticSalvage.PowerupsSpecials import BrokenShip, ExtraLife
+from Player import Player, Bullet
+from Asteroid import Asteroid
+from Star import Star
+from Scoreboard import Scoreboard, FPSMon
+from Settings import Settings
+from Sound import Sounds
+from Button import Button
+from PowerupsSpecials import BrokenShip, ExtraLife
 
 
 class GalacticSalvage:
