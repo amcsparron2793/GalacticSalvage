@@ -1,6 +1,10 @@
 from pygame import display
-from .GsConfig import GsConfig
-from .utils import ColorConverter
+try:
+    from .GsConfig import GsConfig
+    from .utils import ColorConverter
+except ImportError:
+    from GsConfig import GsConfig
+    from utils import ColorConverter
 
 
 class Settings:

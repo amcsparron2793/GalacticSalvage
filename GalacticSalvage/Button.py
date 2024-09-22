@@ -1,5 +1,8 @@
 from pygame import font, Rect
-from .utils import ColorConverter
+try:
+    from .utils import ColorConverter
+except ImportError:
+    from utils import ColorConverter
 
 
 class Button:

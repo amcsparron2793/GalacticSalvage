@@ -1,5 +1,8 @@
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
-from .utils import ColorConverter
+try:
+    from .utils import ColorConverter
+except ImportError:
+    from utils import ColorConverter
 
 
 class GsConfig(BetterConfig):
