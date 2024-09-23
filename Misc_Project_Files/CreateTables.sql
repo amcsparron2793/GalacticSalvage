@@ -17,4 +17,4 @@ create view TopTenLeaderboard as
 select *
 from FullLeaderboard
 order by score desc
-limit 10
+limit 10;
