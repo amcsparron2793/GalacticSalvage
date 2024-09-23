@@ -13,6 +13,8 @@ import pygame
 import random
 from typing import List
 
+from pygame import KEYDOWN
+
 try:
     from .Player import Player, Bullet
     from .Asteroid import Asteroid
@@ -92,6 +94,7 @@ class GalacticSalvage:
         pygame.init()
         self.settings = Settings()
         self.leaderboard = Leaderboard(self)
+        self.show_leaderboard = True
         self.level = 1
 
         self.running = True
@@ -219,7 +222,6 @@ class GalacticSalvage:
                 self.mix.play(self.sounds.game_over)
                 while self.mix.get_busy():
                     pass
-                # TODO: show leaderboard
                 self.running = False
 
     def _check_broken_ship_ship_collisions(self):
@@ -358,6 +360,25 @@ class GalacticSalvage:
             print(f"LEVEL UP - Level {self.level}")
             self.mix.play(self.sounds.level_up)
 
+    def _display_leaderboard(self):
+        # FIXME: this needs to stay on screen until a keypress is detected
+        # Clear the screen
+        self.settings.screen.fill(self.settings.bg_color)
+
+        # Display leaderboard
+        # FIXME: make this work like is_active?
+        if self.show_leaderboard:  # Assuming `show_leaderboard` is a game state flag
+            leaderboard_lines = self.leaderboard.get_final_leaderboard_strings()
+            for i, line in enumerate(leaderboard_lines):
+                text_surface = self.scoreboard.font.render(line, True, (255, 255, 255))
+                self.settings.screen.blit(text_surface, (50, 50 + i * 40))
+        # Update the display
+        pygame.display.flip()
+
+        # Cap the frame rate - this needs to be done so that crazy amounts of system resources
+        # aren't used to render a static image at 10000000000s of FPS
+        self.clock.tick(60)
+
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
@@ -375,7 +396,9 @@ class GalacticSalvage:
                 self._check_level()
             self._update_screen()
         self.leaderboard.add_entry(self.player_name)
-        self.leaderboard.console_display_leaderboard()
+        # FIXME: this needs to wait on screen until a button is pressed - see something like self._check_play_button
+        self._display_leaderboard()# .console_display_leaderboard()
+        self._check_system_events()
         pygame.quit()
 
 

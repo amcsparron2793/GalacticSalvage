@@ -137,6 +137,7 @@ class Leaderboard:
         return player_name
 
     def get_final_leaderboard_strings(self):
+        # TODO: fix the design of the scoreboard itself
         final_strings = []
         # assuming top_ten_leaderboard holds the top 10 players' names and scores
         leaderboard_info = [x.items() for x in self.top_ten_leaderboard]
