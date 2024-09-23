@@ -94,7 +94,8 @@ class GalacticSalvage:
         pygame.init()
         self.settings = Settings()
         self.leaderboard = Leaderboard(self)
-        self.show_leaderboard = True
+        # FIXME: this should only be false while in dev
+        self.show_leaderboard = False
         self.level = 1
 
         self.running = True
