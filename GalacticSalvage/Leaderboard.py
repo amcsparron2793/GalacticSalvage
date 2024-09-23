@@ -1,4 +1,7 @@
-from SQLLite3HelperClass import SQLlite3Helper
+try:
+    from .GsDatabase import GsDatabase
+except ImportError as e:
+    from GsDatabase import GsDatabase
 from pygame import Rect, draw, time, font, display, event as pg_event, quit as pg_quit
 from pygame.constants import *
 from typing import List
@@ -47,9 +50,9 @@ class Leaderboard:
     INSTRUCTIONS_COLOR = (255, 255, 255)
     def __init__(self, gs_game):
         self.settings = gs_game.settings
-        self.game = gs_game
-        self.sql = SQLlite3Helper(self.settings.leaderboard_db_location)
+        self.sql = GsDatabase(self.settings.leaderboard_db_location)
         self.cxn, self.csr = self.sql.GetConnectionAndCursor()
+        self.game = gs_game
         self._leaderboard = None
         self._top_ten_leaderboard = None
         self._current_highscore = None
