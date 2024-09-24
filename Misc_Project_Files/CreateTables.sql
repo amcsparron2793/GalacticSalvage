@@ -18,3 +18,8 @@ select *
 from FullLeaderboard
 order by score desc
 limit 10;
+
+create view GamesPlayed as
+select count(*) as games_played, player_name
+from FullLeaderboard FL
+group by player_name;

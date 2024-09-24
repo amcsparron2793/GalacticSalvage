@@ -392,7 +392,9 @@ class GalacticSalvage:
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
-        self.leaderboard.add_entry(self.player_name)
+        if self.scoreboard.score > 0:
+            self.leaderboard.add_entry(self.player_name)
+
         self.show_leaderboard = True
         while True:
             self._display_leaderboard()

@@ -1,3 +1,5 @@
+import pygame
+
 try:
     from .GsDatabase import GsDatabase
 except ImportError as e:
@@ -103,7 +105,13 @@ class Leaderboard:
         self.cxn.commit()
 
     def get_player_name(self):
-        input_box = InputBox(100, 100, 140, 50)
+        player_name_input_width = 140
+        player_name_input_height = 50
+        center_x = self.settings.screen.get_rect().center[0]
+        center_y = self.settings.screen.get_rect().center[1]
+        input_box = InputBox(x=(center_x - player_name_input_width),
+                             y=(center_y - player_name_input_height),
+                             w=player_name_input_width, h=player_name_input_height)
         clock = time.Clock()
         player_name = None
         done = False
@@ -132,7 +140,10 @@ class Leaderboard:
             instructions_prompt_surface = p_name_font.render('Enter your name:',
                                                              True,
                                                              self.INSTRUCTIONS_COLOR)
-            self.settings.screen.blit(instructions_prompt_surface, (100, 50))
+            instructions_prompt_surface_x = center_x - player_name_input_width * 1.25
+            instructions_prompt_surface_y = center_y - player_name_input_height * 2
+            self.settings.screen.blit(instructions_prompt_surface, (instructions_prompt_surface_x,
+                                                                    instructions_prompt_surface_y))
 
             display.flip()
             clock.tick(30)
