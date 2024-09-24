@@ -13,8 +13,6 @@ import pygame
 import random
 from typing import List
 
-from pygame import KEYDOWN
-
 try:
     from .Player import Player, Bullet
     from .Asteroid import Asteroid
@@ -137,10 +135,7 @@ class GalacticSalvage:
             self.game_active = False
             if event.key == pygame.K_q and not self.game_active:
                 self.running = False
-            elif event.key == pygame.K_q and self.show_leaderboard:
-                print('there was an event')
                 self.show_leaderboard = False
-                self.running = False
 
         elif event.key == pygame.K_SPACE and self.game_active is True:
             self._fire_bullet()
@@ -365,10 +360,9 @@ class GalacticSalvage:
             self.mix.play(self.sounds.level_up)
 
     def _display_leaderboard(self):
-        # FIXME: this needs to stay on screen until a keypress is detected
         # Clear the screen
         self.settings.screen.fill(self.settings.bg_color)
-        while self.show_leaderboard:
+        if self.show_leaderboard:
             # Display leaderboard
             leaderboard_lines = self.leaderboard.get_final_leaderboard_strings()
             for i, line in enumerate(leaderboard_lines):
@@ -380,8 +374,7 @@ class GalacticSalvage:
             # Cap the frame rate - this needs to be done so that crazy amounts of system resources
             # aren't used to render a static image at 10000000000s of FPS
             self.clock.tick(60)
-            # FIXME: this doesnt seem to work?
-            self._check_system_events()
+
 
     def run_game(self):
         """start the main loop for the game"""
@@ -400,9 +393,13 @@ class GalacticSalvage:
                 self._check_level()
             self._update_screen()
         self.leaderboard.add_entry(self.player_name)
-        # FIXME: this needs to wait on screen until a button is pressed - see something like self._check_play_button
         self.show_leaderboard = True
-        self._display_leaderboard()# .console_display_leaderboard()
+        while True:
+            self._display_leaderboard()
+            self._check_system_events()
+            if not self.show_leaderboard:
+                break
+
         pygame.quit()
 
 
