@@ -40,6 +40,7 @@ class Scoreboard:
         self.score = 0
 
     def _score_text_prep(self):
+        # FIXME: current_highscore should stay at the max score has ever been
         if self.score > self.leaderboard.current_highscore:
             current_highscore = self.score
         else:
