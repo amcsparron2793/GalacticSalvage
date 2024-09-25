@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pygame import font, image, transform
 
 
@@ -14,6 +16,7 @@ class Scoreboard:
         color (tuple): The color of the scoreboard text.
         player_lives_image (pygame.Surface): The image representing the player lives.
     """
+    PLAYER_LIVES_IMAGE_PATH = Path('../Misc_Project_Files/images/PlayerShipNoBackground.png')
     def __init__(self, gs_game):
         self.settings = gs_game.settings
         self.level = gs_game.level
@@ -24,7 +27,7 @@ class Scoreboard:
                                  self.settings.scoreboard_font_size)
         self.color = self.settings.scoreboard_font_color
 
-        self.player_lives_image = image.load('../Misc_Project_Files/images/PlayerShipNoBackground.png')
+        self.player_lives_image = image.load(self.PLAYER_LIVES_IMAGE_PATH)
         self.player_lives_image = transform.scale_by(self.player_lives_image, 0.05)
 
     def increase_score(self, amount=1):

@@ -384,7 +384,7 @@ class GalacticSalvage:
             # Display leaderboard
             leaderboard_lines = self.leaderboard.get_final_leaderboard_strings()
             for i, line in enumerate(leaderboard_lines):
-                text_surface = self.scoreboard.font.render(line, True, (255, 255, 255))
+                text_surface = self.scoreboard.font.render(line, True, self.settings.WHITE)
                 self.settings.screen.blit(text_surface, (50, 50 + i * 40))
             # Update the display
             pygame.display.flip()

@@ -1,5 +1,3 @@
-import pygame
-
 try:
     from .GsDatabase import GsDatabase
 except ImportError as e:

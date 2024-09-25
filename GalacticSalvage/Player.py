@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pygame import image, Rect, draw, transform
 from pygame.sprite import Sprite
 
@@ -91,12 +93,13 @@ class Player(Sprite):
         move_left(self): Moves the player ship to the left.
         move_right(self): Moves the player ship to the right.
     """
+    PLAYER_IMAGE_PATH = Path('../Misc_Project_Files/images/PlayerShipNoBackground.png')
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
         self.screen = self.settings.screen
         self.screen_rect = self.screen.get_rect()
-        self.image = image.load('../Misc_Project_Files/images/PlayerShipNoBackground.png')
+        self.image = image.load(self.PLAYER_IMAGE_PATH)
         self.image = transform.scale_by(self.image, 0.15)
         self.rect = self.image.get_rect()
         self.rect.midbottom = self.screen_rect.midbottom
