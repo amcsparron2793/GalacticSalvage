@@ -105,8 +105,7 @@ class GalacticSalvage:
         self.broken_ships = pygame.sprite.Group()
         self.extra_lives = pygame.sprite.Group()
 
-        self.stars: List[Star] = []
-
+        self.stars: List[Star] = [Star(self) for _ in range(25)]
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
 
@@ -291,7 +290,7 @@ class GalacticSalvage:
         for star in self.stars:
             star.draw()
             star.fall()
-            star.OffscreenReset()
+            star.reset_offscreen()
         return self.stars
 
     def _check_system_events(self):
@@ -324,6 +323,8 @@ class GalacticSalvage:
             b_ship.draw(self.settings.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        for star in self.stars:
+            star.draw()
         self.asteroids.draw(self.settings.screen)
 
     def _update_screen(self):
