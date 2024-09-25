@@ -7,27 +7,95 @@ from abandoned space stations and derelict ships.
 Navigate through asteroid fields, avoid enemy patrols,
 and use a variety of retro-inspired weapons and upgrades to fend off hostile forces.
 """
-import random
-from typing import List
 
 import pygame
 
-from Player import Player, Bullet
-from Asteroid import Asteroid, Explosion
-from Star import Star
-from Scoreboard import Scoreboard, FPSMon
-from Settings import Settings
-from Sound import Sounds
-from Button import Button
+import random
+from typing import List
+
+try:
+    from .Player import Player, Bullet
+    from .Asteroid import Asteroid, Explosion
+    from .Star import Star
+    from .Scoreboard import Scoreboard, FPSMon
+    from .Settings import Settings
+    from .Sound import Sounds
+    from .Button import Button
+    from .PowerupsSpecials import BrokenShip, ExtraLife
+    from .Leaderboard import Leaderboard
+
+except ImportError:
+    from Player import Player, Bullet
+    from Asteroid import Asteroid, Explosion
+    from Star import Star
+    from Scoreboard import Scoreboard, FPSMon
+    from Settings import Settings
+    from Sound import Sounds
+    from Button import Button
+    from PowerupsSpecials import BrokenShip, ExtraLife
+    from Leaderboard import Leaderboard
 
 
 class GalacticSalvage:
+    """
+    The GalacticSalvage class represents the main game object in a game called Galactic Salvage.
+    It handles the initialization of Pygame,
+    manages game settings and status, and contains methods for responding to user input.
+
+    Attributes:
+        clock (:class:`pygame.time.Clock`): The clock object for managing the game's frame rate.
+        settings (:class:`Settings`): The game settings object.
+        leaderboard (:class:`Leaderboard`): The leaderboard object.
+        show_leaderboard (bool): Flag for whether to show the leaderboard.
+        level (int): The current game level.
+        running (bool): Flag for whether the game is running.
+        game_active (bool): Flag for whether the game is currently active.
+        play_button (:class:`Button`): The play button object.
+        player (:class:`Player`): The player object.
+        bullets (:class:`pygame.sprite.Group`): The group of bullet objects.
+        asteroids (:class:`pygame.sprite.Group`): The group of asteroid objects.
+        broken_ships (:class:`pygame.sprite.Group`): The group of broken ship objects.
+        extra_lives (:class:`pygame.sprite.Group`): The group of extra life objects.
+        stars (List[:class:`Star`]): The list of star objects.
+        scoreboard (:class:`Scoreboard`): The scoreboard object.
+        fps (:class:`FPSMon`): The FPS monitor object.
+        sounds (:class:`Sounds`): The sounds object.
+        mix (:class:`pygame.mixer`): The sound mixer object.
+        missed_ship_penalty (int): The penalty score for missing a ship.
+        missed_asteroid_penalty (int): The penalty score for missing an asteroid.
+        player_asteroid_hit_penalty (int): The penalty score for the player being hit by an asteroid.
+        player_name (str): The name of the player.
+
+    Methods:
+        __init__(): Initializes the GalacticSalvage object.
+        _check_keydown_events(event): Responds to key press events.
+        _check_keyup_events(event): Responds to key release events.
+        _check_play_button(mouse_pos): Starts a new game when the play button is clicked.
+        _fire_bullet(): Creates a new bullet object and adds it to the bullets group.
+        _update_bullets(): Updates the position of bullets and removes old bullets.
+        _check_bullet_asteroid_collisions(): Responds to bullet-asteroid collisions.
+        _check_asteroid_ship_collisions(): Responds to ship-asteroid collisions.
+        _check_broken_ship_ship_collisions(): Responds to ship-broken ship collisions.
+        _check_extra_life_ship_collisions(): Responds to ship-extra life collisions.
+        _create_asteroids(): Creates new asteroid objects and adds them to the asteroids group.
+        _update_asteroids(): Updates the position of asteroids and removes asteroids that go off-screen.
+        _create_broken_ship(): Creates a new broken ship object.
+        _update_broken_ship(): Updates the position of broken ships and removes them if they go off-screen.
+        _create_extra_life(): Creates a new extra life object.
+        _update_extra_life(): Updates the position of extra lives and removes them if they go off-screen.
+        _UpdateStars(): Updates the position of stars and removes them if they go off-screen.
+        _check_system_events(): Responds to key presses and mouse events.
+        _get_random_events(): Returns a list of random events.
+
+    """
     clock = pygame.time.Clock()
 
     def __init__(self):
         # Initialize Pygame
         pygame.init()
         self.settings = Settings()
+        self.leaderboard = Leaderboard(self)
+        self.show_leaderboard = False
         self.level = 1
 
         self.running = True
@@ -38,15 +106,21 @@ class GalacticSalvage:
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
+        self.extra_lives = pygame.sprite.Group()
 
-        self.stars: List[Star] = []
-
+        self.stars: List[Star] = [Star(self) for _ in range(25)]
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
         self.mix = self.sounds.mx
         self._create_asteroids()
+
+        self.missed_ship_penalty = 3
+        self.missed_asteroid_penalty = 1
+        self.player_asteroid_hit_penalty = 5
+        self.player_name = self.leaderboard.get_player_name()
 
     def _check_keydown_events(self, event):
         """ Respond to key presses. """
@@ -64,13 +138,14 @@ class GalacticSalvage:
             self.game_active = False
             if event.key == pygame.K_q and not self.game_active:
                 self.running = False
+                self.show_leaderboard = False
 
         elif event.key == pygame.K_SPACE and self.game_active is True:
             self._fire_bullet()
         elif event.key == pygame.K_F12:
             self.settings.ToggleFullscreen()
         elif event.key == pygame.K_m:
-            self.sounds.ToggleMute()
+            self.sounds.toggle_mute()
 
     def _check_keyup_events(self, event):
         """ Respond to key releases. """
@@ -125,8 +200,7 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                # now score goes up by the value of level
-                self.scoreboard.increase_score(self.level)
+                self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
                 # FIXME: the explosion does not play in the right spot.
@@ -141,8 +215,8 @@ class GalacticSalvage:
         collisions = pygame.sprite.spritecollideany(self.player, self.asteroids)
 
         if collisions:
-            if self.scoreboard.score >= 5:
-                self.scoreboard.decrease_score(5)
+            if self.scoreboard.score >= self.player_asteroid_hit_penalty:
+                self.scoreboard.decrease_score(self.player_asteroid_hit_penalty)
             else:
                 self.scoreboard.score = 0
 
@@ -155,15 +229,36 @@ class GalacticSalvage:
                 self.player.center_ship()
                 self.player.biltme()
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
-                self._create_asteroids()
             else:
                 self.mix.play(self.sounds.player_boom)
                 while self.mix.get_busy():
                     pass
-                self.mix.play(self.sounds.GameOver)
+                self.mix.play(self.sounds.game_over)
                 while self.mix.get_busy():
                     pass
                 self.running = False
+
+    def _check_broken_ship_ship_collisions(self):
+        """ Respond to ship broken ship collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.broken_ships)
+
+        if collisions:
+            self.scoreboard.increase_score(10)
+            self.broken_ships.remove(collisions)
+            self.mix.play(self.sounds.saved_broken_ship)
+
+    def _check_extra_life_ship_collisions(self):
+        """ Respond to ship broken ship collisions. """
+        # Check for any asteroids that have hit the ship.
+        # If so, get rid of the ship and the asteroid.
+        collisions = pygame.sprite.spritecollideany(self.player, self.extra_lives)
+
+        if collisions:
+            self.player.player_lives += 1
+            self.extra_lives.remove(collisions)
+            self.mix.play(self.sounds.saved_broken_ship)
 
     # noinspection PyTypeChecker
     def _create_asteroids(self):
@@ -181,17 +276,40 @@ class GalacticSalvage:
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
                 self.mix.play(self.sounds.missed_asteroid)
-                self.scoreboard.decrease_score()
+                self.scoreboard.decrease_score(self.missed_asteroid_penalty)
                 self._create_asteroids()
+
+    def _create_broken_ship(self):
+        broken_ship = BrokenShip(self)
+        self.broken_ships.add(broken_ship)
+
+    def _update_broken_ship(self):
+        self.broken_ships.update()
+        for ship in self.broken_ships.copy():
+            # Remove asteroids that go off-screen
+            if ship.rect.bottom >= self.settings.screen.get_height():
+                self.broken_ships.remove(ship)
+                self.scoreboard.decrease_score(self.missed_ship_penalty)
+                self.mix.play(self.sounds.missed_asteroid)
+
+    def _create_extra_life(self):
+        extra_life = ExtraLife(self)
+        self.extra_lives.add(extra_life)
+
+    def _update_extra_life(self):
+        self.extra_lives.update()
+        for life in self.extra_lives.copy():
+            if life.rect.bottom >= self.settings.screen.get_height():
+                self.extra_lives.remove(life)
 
     def _UpdateStars(self):
         for star in self.stars:
             star.draw()
             star.fall()
-            star.OffscreenReset()
+            star.reset_offscreen()
         return self.stars
 
-    def _check_events(self):
+    def _check_system_events(self):
         """ Respond to key presses and mouse events. """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -206,13 +324,32 @@ class GalacticSalvage:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
 
-    def _update_screen(self):
-        """ Update images on the screen and flip to the new screen. """
-        self.settings.screen.fill(self.settings.bg_color)
-        self.player.biltme()
+    def _get_random_events(self):
+        if random.randint(1, 2000) == 1:
+            self._create_broken_ship()
+        if random.randint(1, 4000) == 1:
+            self._create_extra_life()
+        if random.randint(1, 100) == 1:
+            self._create_asteroids()
+
+    def _draw_sprites(self):
+        for life in self.extra_lives.sprites():
+            life.draw(self.settings.screen)
+        for b_ship in self.broken_ships.sprites():
+            b_ship.draw(self.settings.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        for star in self.stars:
+            star.draw()
         self.asteroids.draw(self.settings.screen)
+
+    def _update_screen(self):
+        """ Update images on the screen and flip to the new screen. """
+        self._get_random_events()
+        self.settings.screen.fill(self.settings.bg_color)
+        self.player.biltme()
+
+        self._draw_sprites()
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
@@ -227,6 +364,7 @@ class GalacticSalvage:
         if not self.game_active:
             self.play_button.draw_button()
 
+        # TODO: add display_leaderboard here?
         # Make the most recently drawn screen visible
         pygame.display.flip()
         # self.clock.tick(120)
@@ -237,20 +375,51 @@ class GalacticSalvage:
             self.level += 1
             self.scoreboard.level = self.level
             print(f"LEVEL UP - Level {self.level}")
-            self.mix.play(self.sounds.LevelUp)
+            self.mix.play(self.sounds.level_up)
+
+    def _display_leaderboard(self):
+        # Clear the screen
+        self.settings.screen.fill(self.settings.bg_color)
+        if self.show_leaderboard:
+            # Display leaderboard
+            leaderboard_lines = self.leaderboard.get_final_leaderboard_strings()
+            for i, line in enumerate(leaderboard_lines):
+                text_surface = self.scoreboard.font.render(line, True, (255, 255, 255))
+                self.settings.screen.blit(text_surface, (50, 50 + i * 40))
+            # Update the display
+            pygame.display.flip()
+
+            # Cap the frame rate - this needs to be done so that crazy amounts of system resources
+            # aren't used to render a static image at 10000000000s of FPS
+            self.clock.tick(60)
+
 
     def run_game(self):
         """start the main loop for the game"""
         while self.running:
-            self._check_events()
+            self._check_system_events()
             if self.game_active:
                 self._check_asteroid_ship_collisions()
+                self._check_broken_ship_ship_collisions()
+                self._check_extra_life_ship_collisions()
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
+                self._update_broken_ship()
+                self._update_extra_life()
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()
+        if self.scoreboard.score > 0:
+            self.leaderboard.add_entry(self.player_name)
+
+        self.show_leaderboard = True
+        while True:
+            self._display_leaderboard()
+            self._check_system_events()
+            if not self.show_leaderboard:
+                break
+
         pygame.quit()
 
 

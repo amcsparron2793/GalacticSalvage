@@ -1,4 +1,8 @@
 class ColorConverter:
+    """
+    This module provides a color conversion utility class, `ColorConverter`, which contains static methods for converting colors between different representations.
+
+    """
     @staticmethod
     def rgb_to_hex(rgb):
         """

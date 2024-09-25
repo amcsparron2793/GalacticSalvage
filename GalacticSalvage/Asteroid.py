@@ -7,6 +7,39 @@ import random
 
 
 class Asteroid(Sprite):
+    """
+         class Asteroid(Sprite):
+    This class represents an asteroid object in the game.
+
+    Attributes:
+    - settings (Settings): The game settings object.
+    - width (int): The width of the asteroid.
+    - height (int): The height of the asteroid.
+    - color (Tuple[int, int, int]): The color of the asteroid.
+    - image (Surface): The image of the asteroid.
+    - rect (Rect): The rectangular area occupied by the asteroid on the screen.
+    - speed_min (int): The minimum speed of the asteroid.
+    - speed_max (int): The maximum speed of the asteroid.
+    - speed (int): The current speed of the asteroid.
+    - angle (float): The current angle of the asteroid.
+    - rotation_speed (float): The rotation speed of the asteroid.
+
+    Methods:
+    - __init__(gs_game): Initializes a new instance of the Asteroid class.
+    - update(): Updates the position and rotation of the asteroid.
+
+    __init__(self, gs_game)
+    - Initializes a new instance of the Asteroid class.
+    - Parameters:
+      - gs_game (Game): The game instance.
+    - This method initializes the attributes of the asteroid, such as its size, color, image, speed, and rotation speed.
+        It also sets the initial position of the asteroid above the screen.
+
+    update(self)
+    - Updates the position and rotation of the asteroid.
+    - This method updates the position of the asteroid by incrementing its y-coordinate with the current speed.
+        It also updates the rotation angle of the asteroid based on the rotation speed.
+    """
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
