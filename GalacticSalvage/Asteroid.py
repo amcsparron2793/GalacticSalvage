@@ -40,7 +40,6 @@ class Asteroid(Sprite):
     """
 
     ASTEROID_IMAGE_PATH = Path('../Misc_Project_Files/images/SingleAsteroid.png')
-    EXPLOSION_FRAME_DIR_PATH = Path('../Misc_Project_Files/images/ExplosionPNG/')
 
     def __init__(self, gs_game):
         super().__init__()
@@ -88,10 +87,11 @@ class Asteroid(Sprite):
 
 
 class Explosion(Sprite):
+    EXPLOSION_FRAME_DIR_PATH = Path('../Misc_Project_Files/images/ExplosionPNG/')
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
-        self.animation_frames = [image.load(self.EXPLOSION_FRAME_DIR.joinpath(x)) for x in self.EXPLOSION_FRAME_DIR_PATH.iterdir()]
+        self.animation_frames = [image.load(x) for x in self.EXPLOSION_FRAME_DIR_PATH.iterdir()]
 
     def play_animation(self):
         # frame_duration = 50  # Duration of each frame in milliseconds

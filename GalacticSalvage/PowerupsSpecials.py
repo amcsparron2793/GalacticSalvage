@@ -86,7 +86,7 @@ class BrokenShip(Sprite):
 
     """
 
-    BROKENSHIP_IMAGE_PATH = Path('../Misc_Project_Files/images/BrokenShip.png')
+    BROKENSHIP_IMAGE_PATH = Path('../Misc_Project_Files/images/OtherShip.png')
 
     def __init__(self, gs_game):
         super().__init__()
