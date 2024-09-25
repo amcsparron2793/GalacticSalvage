@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from BetterConfigAJM import BetterConfigAJM as BetterConfig
 try:
     from .utils import ColorConverter
@@ -29,6 +31,9 @@ class GsConfig(BetterConfig):
 
     Note: The GsConfig class inherits all attributes and methods from the BetterConfig class.
     """
+
+    DATABASE_FILE_DEFAULT_PATH = Path('../Misc_Project_Files/GS_Leaderboard.db')
+
     def __init__(self, config_filename, config_dir, config_list_dict=None, *args, **kwargs):
         super().__init__(config_filename, config_dir, config_list_dict, *args, **kwargs)
 
@@ -75,7 +80,7 @@ class GsConfig(BetterConfig):
                     },
                 'LEADERBOARD':
                     {
-                        'database_file_path': '../Misc_Project_Files/GS_Leaderboard.db'
+                        'database_file_path': self.DATABASE_FILE_DEFAULT_PATH
                     }
             }
         ]

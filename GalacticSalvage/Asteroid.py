@@ -1,9 +1,8 @@
-from os.path import isfile
-
 from pygame import Surface, SRCALPHA, draw, transform, Rect, image
 import random
 from pygame.sprite import Sprite
 
+from pathlib import Path
 
 class Asteroid(Sprite):
     """
@@ -39,17 +38,20 @@ class Asteroid(Sprite):
     - This method updates the position of the asteroid by incrementing its y-coordinate with the current speed.
         It also updates the rotation angle of the asteroid based on the rotation speed.
     """
+
+    ASTEROID_IMAGE_PATH = Path('../Misc_Project_Files/images/SingleAsteroid.png')
+
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
         self.width = random.randint(20, 50)
         self.height = random.randint(20, 50)
         self.color = (150, 150, 150)
-        if not isfile('../Misc_Project_Files/images/SingleAsteroid.png'):
+        if not self.ASTEROID_IMAGE_PATH.is_file():
             self.image = Surface((self.width, self.height), SRCALPHA)
             draw.rect(self.image, self.color, (0, 0, self.width, self.height))
         else:
-            self.image = image.load('../Misc_Project_Files/images/SingleAsteroid.png')
+            self.image = image.load(self.ASTEROID_IMAGE_PATH)
             self.image = transform.scale_by(self.image, random.uniform(
                 self.settings.asteroid_scale_min, self.settings.asteroid_scale_max))
         self.rect = self.image.get_rect()

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pygame import mixer, image, transform
 
 
@@ -22,14 +24,14 @@ class Sounds:
         draw_mute_img: Draws the mute image on the screen.
     """
 
-    BLASTER_SOUND_PATH = '../Misc_Project_Files/sounds/blaster.mp3'
-    PLAYER_BOOM_SOUND_PATH = '../Misc_Project_Files/sounds/BoomPlayer.mp3'
-    MISSED_ASTEROID_SOUND_PATH = '../Misc_Project_Files/sounds/MissedAsteroid.mp3'
-    ASTEROID_BOOM_SOUND_PATH = '../Misc_Project_Files/sounds/BoomAsteroid.mp3'
-    GAME_OVER_SOUND_PATH = '../Misc_Project_Files/sounds/GameOver.mp3'
-    LEVEL_UP_SOUND_PATH = '../Misc_Project_Files/sounds/LevelUp.mp3'
-    SAVED_BROKEN_SHIP_SOUND_PATH = '../Misc_Project_Files/sounds/SavedBrokenShip.mp3'
-    MUTE_IMAGE_PATH = '../Misc_Project_Files/images/sound-off.png'
+    BLASTER_SOUND_PATH = Path('../Misc_Project_Files/sounds/blaster.mp3')
+    PLAYER_BOOM_SOUND_PATH = Path('../Misc_Project_Files/sounds/BoomPlayer.mp3')
+    MISSED_ASTEROID_SOUND_PATH = Path('../Misc_Project_Files/sounds/MissedAsteroid.mp3')
+    ASTEROID_BOOM_SOUND_PATH = Path('../Misc_Project_Files/sounds/BoomAsteroid.mp3')
+    GAME_OVER_SOUND_PATH = Path('../Misc_Project_Files/sounds/GameOver.mp3')
+    LEVEL_UP_SOUND_PATH = Path('../Misc_Project_Files/sounds/LevelUp.mp3')
+    SAVED_BROKEN_SHIP_SOUND_PATH = Path('../Misc_Project_Files/sounds/SavedBrokenShip.mp3')
+    MUTE_IMAGE_PATH = Path('../Misc_Project_Files/images/sound-off.png')
     MUTE_IMAGE_SCALE = 0.05
 
     def __init__(self, gs_game):

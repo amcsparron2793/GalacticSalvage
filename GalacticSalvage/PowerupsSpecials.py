@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pygame.sprite import Sprite
 from pygame import image, transform, font
 from random import randint
@@ -35,11 +37,14 @@ class ExtraLife(Sprite):
             Parameters:
             - screen (Surface): The screen surface to draw on.
     """
+
+    EXTRALIFE_IMAGE_PATH = Path('../Misc_Project_Files/images/1UP.png')
+
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
         self.player = gs_game.player
-        self.image = self._load_img_scale_and_rotate('../Misc_Project_Files/images/1UP.png')
+        self.image = self._load_img_scale_and_rotate(self.EXTRALIFE_IMAGE_PATH)
         self.rect = self.image.get_rect()
         self.rect.x = randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
@@ -80,10 +85,13 @@ class BrokenShip(Sprite):
             draw(self, screen): Draws the broken ship on the screen along with the associated text.
 
     """
+
+    BROKENSHIP_IMAGE_PATH = Path('../Misc_Project_Files/images/BrokenShip.png')
+
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
-        self.image = self._load_img_scale_and_rotate('../Misc_Project_Files/images/OtherShip.png')
+        self.image = self._load_img_scale_and_rotate(self.BROKENSHIP_IMAGE_PATH)
         self.rect = self.image.get_rect()
         self.rect.x = randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
@@ -108,6 +116,6 @@ class BrokenShip(Sprite):
         screen.blit(self.image, self.rect)
 
         # Render and draw the text
-        text_surface = self.font.render(self.text, True, (255, 255, 255))  # Render text in white
+        text_surface = self.font.render(self.text, True, self.settings.WHITE)  # Render text in white
         text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 5))  # Position below the ship
         screen.blit(text_surface, text_rect)
