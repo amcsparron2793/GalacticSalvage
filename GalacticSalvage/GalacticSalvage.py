@@ -38,52 +38,55 @@ except ImportError:
 
 class GalacticSalvage:
     """
-    GalacticSalvage
-
-    This class represents the main game object in the Galactic Salvage game.
-    It manages the game state, including player input, game objects, and game logic.
+    The GalacticSalvage class represents the main game object in a game called Galactic Salvage.
+    It handles the initialization of Pygame,
+    manages game settings and status, and contains methods for responding to user input.
 
     Attributes:
-        clock: The Pygame clock object used to manage the game's frame rate.
-        settings: An instance of the Settings class that stores the game's settings.
-        level: The current level of the game.
-        running: A boolean indicating whether the game is currently running.
-        game_active: A boolean indicating whether the game is currently active.
-        play_button: An instance of the Button class representing the play button.
-        player: An instance of the Player class representing the player's ship.
-        bullets: A Pygame sprite Group containing the bullets fired by the player's ship.
-        asteroids: A Pygame sprite Group containing the asteroids in the game.
-        broken_ships: A Pygame sprite Group containing the broken ships in the game.
-        extra_lives: A Pygame sprite Group containing the extra lives in the game.
-        stars: A list of Star objects representing the background stars in the game.
-        scoreboard: An instance of the Scoreboard class that manages the game's scoreboard.
-        fps: An instance of the FPSMon class that displays the game's frame rate.
-        sounds: An instance of the Sounds class that manages the game's sound effects.
-        mix: The Pygame Mixer object used to play sound effects.
-        missed_ship_penalty: The penalty score for missing a broken ship.
-        missed_asteroid_penalty: The penalty score for missing an asteroid.
-        player_asteroid_hit_penalty: The penalty score for the player's ship colliding with an asteroid.
+        clock (:class:`pygame.time.Clock`): The clock object for managing the game's frame rate.
+        settings (:class:`Settings`): The game settings object.
+        leaderboard (:class:`Leaderboard`): The leaderboard object.
+        show_leaderboard (bool): Flag for whether to show the leaderboard.
+        level (int): The current game level.
+        running (bool): Flag for whether the game is running.
+        game_active (bool): Flag for whether the game is currently active.
+        play_button (:class:`Button`): The play button object.
+        player (:class:`Player`): The player object.
+        bullets (:class:`pygame.sprite.Group`): The group of bullet objects.
+        asteroids (:class:`pygame.sprite.Group`): The group of asteroid objects.
+        broken_ships (:class:`pygame.sprite.Group`): The group of broken ship objects.
+        extra_lives (:class:`pygame.sprite.Group`): The group of extra life objects.
+        stars (List[:class:`Star`]): The list of star objects.
+        scoreboard (:class:`Scoreboard`): The scoreboard object.
+        fps (:class:`FPSMon`): The FPS monitor object.
+        sounds (:class:`Sounds`): The sounds object.
+        mix (:class:`pygame.mixer`): The sound mixer object.
+        missed_ship_penalty (int): The penalty score for missing a ship.
+        missed_asteroid_penalty (int): The penalty score for missing an asteroid.
+        player_asteroid_hit_penalty (int): The penalty score for the player being hit by an asteroid.
+        player_name (str): The name of the player.
 
     Methods:
-        __init__(self): Initializes the GalacticSalvage object and sets up the game.
-        _check_keydown_events(self, event): Responds to key press events by performing the associated actions.
-        _check_keyup_events(self, event): Responds to key release events by performing the associated actions.
-        _check_play_button(self, mouse_pos): Starts a new game when the player presses the play button.
-        _fire_bullet(self): Creates a new bullet and adds it to the bullets group.
-        _update_bullets(self): Updates the position of bullets and removes any old bullets.
-        _check_bullet_asteroid_collisions(self): Responds to collisions between bullets and asteroids by removing them from the game.
-        _check_asteroid_ship_collisions(self): Responds to collisions between the player's ship and asteroids by performing the associated actions.
-        _check_broken_ship_ship_collisions(self): Responds to collisions between the player's ship and broken ships by performing the associated actions.
-        _check_extra_life_ship_collisions(self): Responds to collisions between the player's ship and extra lives by performing the associated actions.
-        _create_asteroids(self): Creates asteroids and adds them to the sprite groups.
-        _update_asteroids(self): Updates the position of asteroids and removes any that go off-screen.
-        _create_broken_ship(self): Creates a new broken ship and adds it to the broken ships group.
-        _update_broken_ship(self): Updates the position of broken ships and removes any that go off-screen.
-        _create_extra_life(self): Creates a new extra life and adds it to the extra lives group.
-        _update_extra_life(self): Updates the position of extra lives and removes any that go off-screen.
-        _UpdateStars(self): Updates the position of the background stars.
-        _check_system_events(self): Responds to system events such as quitting the game or clicking the play button.
-        _get_random_events(self): Generates random events such as creating a broken ship or extra life.
+        __init__(): Initializes the GalacticSalvage object.
+        _check_keydown_events(event): Responds to key press events.
+        _check_keyup_events(event): Responds to key release events.
+        _check_play_button(mouse_pos): Starts a new game when the play button is clicked.
+        _fire_bullet(): Creates a new bullet object and adds it to the bullets group.
+        _update_bullets(): Updates the position of bullets and removes old bullets.
+        _check_bullet_asteroid_collisions(): Responds to bullet-asteroid collisions.
+        _check_asteroid_ship_collisions(): Responds to ship-asteroid collisions.
+        _check_broken_ship_ship_collisions(): Responds to ship-broken ship collisions.
+        _check_extra_life_ship_collisions(): Responds to ship-extra life collisions.
+        _create_asteroids(): Creates new asteroid objects and adds them to the asteroids group.
+        _update_asteroids(): Updates the position of asteroids and removes asteroids that go off-screen.
+        _create_broken_ship(): Creates a new broken ship object.
+        _update_broken_ship(): Updates the position of broken ships and removes them if they go off-screen.
+        _create_extra_life(): Creates a new extra life object.
+        _update_extra_life(): Updates the position of extra lives and removes them if they go off-screen.
+        _UpdateStars(): Updates the position of stars and removes them if they go off-screen.
+        _check_system_events(): Responds to key presses and mouse events.
+        _get_random_events(): Returns a list of random events.
+
     """
     clock = pygame.time.Clock()
 
@@ -348,6 +351,7 @@ class GalacticSalvage:
         if not self.game_active:
             self.play_button.draw_button()
 
+        # TODO: add display_leaderboard here?
         # Make the most recently drawn screen visible
         pygame.display.flip()
         # self.clock.tick(120)
