@@ -14,7 +14,8 @@ import random
 from typing import List
 
 try:
-    from .Player import Player, Bullet, SuperBullet
+    from .Player import Player
+    from .Bullet import Bullet, SuperBullet
     from .Asteroid import Asteroid
     from .Star import Star
     from .Scoreboard import Scoreboard, FPSMon
@@ -25,7 +26,8 @@ try:
     from .Leaderboard import Leaderboard
 
 except ImportError:
-    from Player import Player, Bullet, SuperBullet
+    from Player import Player
+    from Bullet import Bullet, SuperBullet
     from Asteroid import Asteroid
     from Star import Star
     from Scoreboard import Scoreboard, FPSMon
