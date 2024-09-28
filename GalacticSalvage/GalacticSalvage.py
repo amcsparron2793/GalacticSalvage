@@ -89,16 +89,6 @@ class GalacticSalvage:
 
     """
     clock = pygame.time.Clock()
-    """
-            if random.randint(1, 2000) == 1:
-            self._create_broken_ship()
-        if random.randint(1, 4000) == 1:
-            self._create_extra_life()
-        if random.randint(1, 100) == 1:
-            self._create_asteroids()
-        if random.randint(1, 3500) == 1:
-            self._create_super_bullet_pu()
-    """
     RANDOM_EVENT_ODDS_MAX = {'broken_ship': 2000,
                          'extra_life': 4000,
                          'asteroid': 100,
