@@ -145,7 +145,7 @@ class SuperBulletPowerUp(ExtraLife):
         screen.blit(text_surface, text_rect)
 
     def draw(self, screen):
-        # Draw the ship
+        # Draw the powerup
         screen.blit(self.image, self.rect)
         self._render_and_draw_text(screen)
 

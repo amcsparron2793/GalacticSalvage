@@ -812,6 +812,20 @@ class GalacticSalvage:
             # aren't used to render a static image at 10000000000s of FPS
             self.clock.tick(60)
 
+    def _check_all_collisions(self):
+        self._check_asteroid_ship_collisions()
+        self._check_broken_ship_ship_collisions()
+        self._check_extra_life_ship_collisions()
+        self._check_super_bullet_pu_ship_collisions()
+
+    def _update_screen_elements(self):
+        self.player.update()
+        self._update_bullets()
+        self._update_asteroids()
+        self._update_broken_ship()
+        self._update_extra_life()
+        self._update_super_bullet_pu()
+        self._UpdateStars()
 
     def run_game(self):
         """
@@ -833,17 +847,8 @@ class GalacticSalvage:
         while self.running:
             self._check_system_events()
             if self.game_active:
-                self._check_asteroid_ship_collisions()
-                self._check_broken_ship_ship_collisions()
-                self._check_extra_life_ship_collisions()
-                self._check_super_bullet_pu_ship_collisions()
-                self.player.update()
-                self._update_bullets()
-                self._update_asteroids()
-                self._update_broken_ship()
-                self._update_extra_life()
-                self._update_super_bullet_pu()
-                self._UpdateStars()
+                self._check_all_collisions()
+                self._update_screen_elements()
                 self._check_level()
             self._update_screen()
         if self.scoreboard.score > 0:
