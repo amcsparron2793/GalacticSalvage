@@ -113,8 +113,8 @@ class GalacticSalvage:
 
         self.bullets = pygame.sprite.Group()
         self.persistent_powerups_available = pygame.sprite.Group()
-        # just for testing
-        #self.persistent_powerups_available.add(SuperBullet(self))
+        # FIXME: just for testing
+        self.persistent_powerups_available.add(SuperBullet(self))
 
         self.has_superbullet = any([isinstance(x, SuperBullet) for x in self.persistent_powerups_available])
         self.asteroids = pygame.sprite.Group()
@@ -287,7 +287,12 @@ class GalacticSalvage:
 
         if collisions:
             for asteroid in collisions.values():
-                self.scoreboard.increase_score(1)
+                # FIXME: THIS WONT WORK UNLESS THE CHECK FOR COLLISIONS IS BEFORE THE DELETION OF THE BULLETS
+                if any([isinstance(b, SuperBullet) for b in self.bullets]):
+                    print(len(self.asteroids))
+                    self.scoreboard.increase_score(len(self.asteroids))
+                else:
+                    self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
 
