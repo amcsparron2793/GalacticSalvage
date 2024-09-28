@@ -68,13 +68,16 @@ class Settings:
         # Set up the screen dimensions
         self.screen_width = self.config.getint('DEFAULT', 'screen_width')
         self.screen_height = self.config.getint('DEFAULT', 'screen_height')
-        self.fullscreen_width_height = display.get_desktop_sizes()
+        self.fullscreen_width_height = display.Info()
 
         if not self.use_fullscreen:
             self.screen = display.set_mode((self.config.getint('DEFAULT', 'screen_width'),
                                             self.config.getint('DEFAULT', 'screen_height')))
         else:
-            self.screen = display.set_mode(self.fullscreen_width_height[0])
+            self.screen = display.set_mode((self.fullscreen_width_height.current_w,
+                                            self.fullscreen_width_height.current_h))
+            self.screen_height = display.Info().current_h
+            self.screen_width = display.Info().current_w
 
         display.set_caption("Galactic Salvage")
 
