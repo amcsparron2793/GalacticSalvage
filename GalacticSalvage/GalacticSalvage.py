@@ -21,7 +21,7 @@ try:
     from .Settings import Settings
     from .Sound import Sounds
     from .Button import Button
-    from .PowerupsSpecials import BrokenShip, ExtraLife
+    from .PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp
     from .Leaderboard import Leaderboard
 
 except ImportError:
@@ -32,7 +32,7 @@ except ImportError:
     from Settings import Settings
     from Sound import Sounds
     from Button import Button
-    from PowerupsSpecials import BrokenShip, ExtraLife
+    from PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp
     from Leaderboard import Leaderboard
 
 
@@ -96,7 +96,7 @@ class GalacticSalvage:
         self.settings = Settings()
         self.leaderboard = Leaderboard(self)
         self.show_leaderboard = False
-        # TODO: implement a way for the player to get this powerup
+
         self.use_superbullet = False
         self.level = 1
 
@@ -114,6 +114,7 @@ class GalacticSalvage:
         self.asteroids = pygame.sprite.Group()
         self.broken_ships = pygame.sprite.Group()
         self.extra_lives = pygame.sprite.Group()
+        self.super_bullet_powerups = pygame.sprite.Group()
 
         # FIXME: does this comp need to be here?
         self.stars: List[Star] = [Star(self) for _ in range(25)]
@@ -267,6 +268,17 @@ class GalacticSalvage:
             self.extra_lives.remove(collisions)
             self.mix.play(self.sounds.saved_broken_ship)
 
+    def _check_super_bullet_pu_ship_collisions(self):
+        """ Respond to ship extra life collisions. """
+        # Check for any extra lives that have hit the ship.
+        # If so, get rid of the extra life sprite and add an extra life.
+        collisions = pygame.sprite.spritecollideany(self.player, self.super_bullet_powerups)
+
+        if collisions:
+            self.super_bullet_powerups.remove(collisions)
+            self.persistent_powerups_available.add(SuperBullet(self))
+            self.mix.play(self.sounds.saved_broken_ship)
+
     # noinspection PyTypeChecker
     def _create_asteroids(self):
         # Create asteroids and add them to the sprite groups
@@ -309,6 +321,17 @@ class GalacticSalvage:
             if life.rect.bottom >= self.settings.screen.get_height():
                 self.extra_lives.remove(life)
 
+    def _create_super_bullet_pu(self):
+        super_bullet_pu = SuperBulletPowerUp(self)
+        self.super_bullet_powerups.add(super_bullet_pu)
+        self.has_superbullet = True
+
+    def _update_super_bullet_pu(self):
+        self.super_bullet_powerups.update()
+        for pu in self.super_bullet_powerups.copy():
+            if pu.rect.bottom >= self.settings.screen.get_height():
+                self.super_bullet_powerups.remove(pu)
+
     def _UpdateStars(self):
         for star in self.stars:
             star.draw()
@@ -338,8 +361,12 @@ class GalacticSalvage:
             self._create_extra_life()
         if random.randint(1, 100) == 1:
             self._create_asteroids()
+        if random.randint(1, 3500) == 1:
+            self._create_super_bullet_pu()
 
     def _draw_sprites(self):
+        for sb_power_up in self.super_bullet_powerups.sprites():
+            sb_power_up.draw(self.settings.screen)
         for life in self.extra_lives.sprites():
             life.draw(self.settings.screen)
         for b_ship in self.broken_ships.sprites():
@@ -416,11 +443,13 @@ class GalacticSalvage:
                 self._check_asteroid_ship_collisions()
                 self._check_broken_ship_ship_collisions()
                 self._check_extra_life_ship_collisions()
+                self._check_super_bullet_pu_ship_collisions()
                 self.player.update()
                 self._update_bullets()
                 self._update_asteroids()
                 self._update_broken_ship()
                 self._update_extra_life()
+                self._update_super_bullet_pu()
                 self._UpdateStars()
                 self._check_level()
             self._update_screen()

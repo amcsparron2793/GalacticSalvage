@@ -120,4 +120,21 @@ class BrokenShip(Sprite):
         screen.blit(text_surface, text_rect)
 
 
-# TODO: SuperBulletPowerUp
+class SuperBulletPowerUp(BrokenShip):
+    SUPERBULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
+    def __init__(self, gs_game):
+        super().__init__(gs_game)
+        self.gs_game = gs_game
+        self.image = self.sb_load_img_scale_and_rotate(self.SUPERBULLET_IMAGE_PATH)
+
+        self.text = "SUPER BULLET!"
+        self.font = font.Font(None, 24)  # Use a default font with size 24
+
+    @staticmethod
+    def sb_load_img_scale_and_rotate(img_path):
+        image_surface = image.load(img_path).convert_alpha()
+        scaled_image = transform.scale_by(image_surface, 1)
+        rotated_image = transform.rotate(scaled_image, randint(1, 360))  # the ships are randomly rotated
+        return rotated_image
+
+
