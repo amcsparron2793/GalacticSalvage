@@ -120,7 +120,6 @@ class GalacticSalvage:
         self.extra_lives = pygame.sprite.Group()
         self.super_bullet_powerups = pygame.sprite.Group()
 
-        # FIXME: does this comp need to be here?
         self.stars: List[Star] = [Star(self) for _ in range(25)]
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
