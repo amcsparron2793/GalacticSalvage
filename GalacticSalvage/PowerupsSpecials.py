@@ -4,6 +4,8 @@ from pygame.sprite import Sprite
 from pygame import image, transform, font, Rect
 from random import randint
 
+# TODO: generalize these more... see Superbullets subclassing of BrokenShip/ExtraLife
+
 class ExtraLife(Sprite):
     """
     This is the documentation for the ExtraLife class.
@@ -120,13 +122,12 @@ class BrokenShip(Sprite):
         screen.blit(text_surface, text_rect)
 
 
-class SuperBulletPowerUp(BrokenShip):
+class SuperBulletPowerUp(ExtraLife):
     SUPERBULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
     def __init__(self, gs_game):
         super().__init__(gs_game)
         self.gs_game = gs_game
         self.image = self.sb_load_img_scale_and_rotate(self.SUPERBULLET_IMAGE_PATH)
-
         self.text = "SUPER BULLET!"
         self.font = font.Font(None, 24)  # Use a default font with size 24
 
@@ -136,5 +137,16 @@ class SuperBulletPowerUp(BrokenShip):
         scaled_image = transform.scale_by(image_surface, 1)
         rotated_image = transform.rotate(scaled_image, randint(1, 360))  # the ships are randomly rotated
         return rotated_image
+
+    def _render_and_draw_text(self, screen):
+        # Render and draw the text
+        text_surface = self.font.render(self.text, True, self.settings.WHITE)  # Render text in white
+        text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 5))  # Position below the ship
+        screen.blit(text_surface, text_rect)
+
+    def draw(self, screen):
+        # Draw the ship
+        screen.blit(self.image, self.rect)
+        self._render_and_draw_text(screen)
 
 
