@@ -14,25 +14,25 @@ import random
 from typing import List
 
 try:
-    from .Player import Player, Bullet
+    from .Player import Player, Bullet, SuperBullet
     from .Asteroid import Asteroid
     from .Star import Star
     from .Scoreboard import Scoreboard, FPSMon
     from .Settings import Settings
     from .Sound import Sounds
     from .Button import Button
-    from .PowerupsSpecials import BrokenShip, ExtraLife, SuperBullet
+    from .PowerupsSpecials import BrokenShip, ExtraLife
     from .Leaderboard import Leaderboard
 
 except ImportError:
-    from Player import Player, Bullet
+    from Player import Player, Bullet, SuperBullet
     from Asteroid import Asteroid
     from Star import Star
     from Scoreboard import Scoreboard, FPSMon
     from Settings import Settings
     from Sound import Sounds
     from Button import Button
-    from PowerupsSpecials import BrokenShip, ExtraLife, SuperBullet
+    from PowerupsSpecials import BrokenShip, ExtraLife
     from Leaderboard import Leaderboard
 
 
@@ -106,10 +106,16 @@ class GalacticSalvage:
         self.player = Player(self)
 
         self.bullets = pygame.sprite.Group()
+        self.persistent_powerups_available = pygame.sprite.Group()
+        # just for testing
+        #self.persistent_powerups_available.add(SuperBullet(self))
+
+        self.has_superbullet = any([isinstance(x, SuperBullet) for x in self.persistent_powerups_available])
         self.asteroids = pygame.sprite.Group()
         self.broken_ships = pygame.sprite.Group()
         self.extra_lives = pygame.sprite.Group()
 
+        # FIXME: does this comp need to be here?
         self.stars: List[Star] = [Star(self) for _ in range(25)]
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
@@ -141,8 +147,15 @@ class GalacticSalvage:
                 self.running = False
                 self.show_leaderboard = False
 
+        elif (event.key == pygame.K_LCTRL and self.game_active is True
+              and self.has_superbullet):
+            self.mix.play(self.sounds.saved_broken_ship)
+            self.use_superbullet = True
+
         elif event.key == pygame.K_SPACE and self.game_active is True:
             self._fire_bullet()
+            self.use_superbullet = False
+
         elif event.key == pygame.K_F12:
             self.settings.ToggleFullscreen()
         elif event.key == pygame.K_m:
@@ -167,8 +180,10 @@ class GalacticSalvage:
     def _fire_bullet(self):
         """ Create a new bullet and add it to the bullets group. """
         if len(self.bullets) < self.settings.bullets_allowed:
-            if self.use_superbullet:
+            if self.use_superbullet and self.has_superbullet:
                 new_bullet = SuperBullet(self)
+                self.has_superbullet = False
+
             else:
                 new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
@@ -335,6 +350,13 @@ class GalacticSalvage:
             star.draw()
         self.asteroids.draw(self.settings.screen)
 
+    def _check_saved_powerups(self):
+        for powerup in self.persistent_powerups_available.copy():
+            if not self.has_superbullet:
+                # TODO: if any new powerups are added then they need to be checked here
+                if isinstance(powerup, SuperBullet):
+                    self.persistent_powerups_available.remove(powerup)
+
     def _update_screen(self):
         """ Update images on the screen and flip to the new screen. """
         self._get_random_events()
@@ -342,6 +364,7 @@ class GalacticSalvage:
         self.player.biltme()
 
         self._draw_sprites()
+        self._check_saved_powerups()
 
         # Draw the score information
         self.scoreboard.display(self.settings.screen)
