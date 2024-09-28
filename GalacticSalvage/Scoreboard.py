@@ -17,6 +17,12 @@ class Scoreboard:
         player_lives_image (pygame.Surface): The image representing the player lives.
     """
     PLAYER_LIVES_IMAGE_PATH = Path('../Misc_Project_Files/images/PlayerShipNoBackground.png')
+    SCORE_TEXT_LOCATION_TUPLE = (10, 10)
+    LIFE_IMAGE_LOCATION_TUPLE = (1, 75)
+    LIFE_TEXT_LOCATION_TUPLE = (1, 65)
+
+
+
     def __init__(self, gs_game):
         self.settings = gs_game.settings
         self.level = gs_game.level
@@ -53,15 +59,15 @@ class Scoreboard:
                                   f"Highscore: {str(current_highscore)}",
                                   True, self.color)
         s_text_rect = s_text.get_rect()
-        s_text_location = (10, 10)
+        s_text_location = self.SCORE_TEXT_LOCATION_TUPLE
         return s_text, s_text_rect, s_text_location
 
     def _life_img_prep(self):
-        life_img_location = (1, 75)
+        life_img_location = self.LIFE_IMAGE_LOCATION_TUPLE
         life_img_rect = self.player_lives_image.get_rect()
         life_text = self.font.render("Lives Remaining: ", True, self.color)
         life_text_rect = life_text.get_rect()
-        life_text_location = (1, 65)
+        life_text_location = self.LIFE_TEXT_LOCATION_TUPLE
 
         life_img_rect.x, life_img_rect.y = life_img_location
         life_text_rect.x, life_text_rect.y = life_text_location
