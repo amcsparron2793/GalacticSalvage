@@ -21,7 +21,7 @@ try:
     from .Settings import Settings
     from .Sound import Sounds
     from .Button import Button
-    from .PowerupsSpecials import BrokenShip, ExtraLife
+    from .PowerupsSpecials import BrokenShip, ExtraLife, SuperBullet
     from .Leaderboard import Leaderboard
 
 except ImportError:
@@ -32,7 +32,7 @@ except ImportError:
     from Settings import Settings
     from Sound import Sounds
     from Button import Button
-    from PowerupsSpecials import BrokenShip, ExtraLife
+    from PowerupsSpecials import BrokenShip, ExtraLife, SuperBullet
     from Leaderboard import Leaderboard
 
 
@@ -96,6 +96,8 @@ class GalacticSalvage:
         self.settings = Settings()
         self.leaderboard = Leaderboard(self)
         self.show_leaderboard = False
+        # TODO: implement a way for the player to get this powerup
+        self.use_superbullet = False
         self.level = 1
 
         self.running = True
@@ -165,7 +167,10 @@ class GalacticSalvage:
     def _fire_bullet(self):
         """ Create a new bullet and add it to the bullets group. """
         if len(self.bullets) < self.settings.bullets_allowed:
-            new_bullet = Bullet(self)
+            if self.use_superbullet:
+                new_bullet = SuperBullet(self)
+            else:
+                new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
             self.mix.play(self.sounds.blaster)
 
@@ -237,9 +242,9 @@ class GalacticSalvage:
             self.mix.play(self.sounds.saved_broken_ship)
 
     def _check_extra_life_ship_collisions(self):
-        """ Respond to ship broken ship collisions. """
-        # Check for any asteroids that have hit the ship.
-        # If so, get rid of the ship and the asteroid.
+        """ Respond to ship extra life collisions. """
+        # Check for any extra lives that have hit the ship.
+        # If so, get rid of the extra life sprite and add an extra life.
         collisions = pygame.sprite.spritecollideany(self.player, self.extra_lives)
 
         if collisions:
@@ -351,7 +356,6 @@ class GalacticSalvage:
         if not self.game_active:
             self.play_button.draw_button()
 
-        # TODO: add display_leaderboard here?
         # Make the most recently drawn screen visible
         pygame.display.flip()
         # self.clock.tick(120)

@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from pygame.sprite import Sprite
-from pygame import image, transform, font
+from pygame import image, transform, font, Rect
 from random import randint
-
+from Player import Bullet
 
 class ExtraLife(Sprite):
     """
@@ -119,3 +119,11 @@ class BrokenShip(Sprite):
         text_surface = self.font.render(self.text, True, self.settings.WHITE)  # Render text in white
         text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 5))  # Position below the ship
         screen.blit(text_surface, text_rect)
+
+
+class SuperBullet(Bullet):
+    def __init__(self, gs_game):
+        super().__init__(gs_game)
+        self.rect = Rect(0, 0, self.settings.bullet_width * self.settings.screen_width, self.settings.bullet_height)
+        self.rect.midtop = gs_game.player.rect.midtop
+        self.y = float(self.rect.y)
