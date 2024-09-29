@@ -3,7 +3,7 @@
 echo Prepping for Pyinstaller build..
 
 REM %HOMEDRIVE%%HOMEPATH% = home drive letter \ path to home dir
-set project_root=%HOMEDRIVE%%HOMEPATH%\Desktop\Python_Projects\GalacticSalvage
+set project_root=%HOMEDRIVE%%HOMEPATH%\Desktop\Pycharm_Projects\GalacticSalvage
 set build_dir=%project_root%\Misc_Project_Files\pyinstaller_build_dir
 set specfile_name=Main.spec
 set dist_dir=%build_dir%\dist
@@ -30,7 +30,7 @@ echo building in %build_dir% based on %specfile_name%
 REM attempt to run pyinstaller,
 REM if there is an error, goto ERROR.
 REM Otherwise goto COMPLETE
-pyinstaller --noconfirm -D %specfile_name%
+pyinstaller --noconfirm %specfile_name%
 
 IF %ERRORLEVEL% EQU 3 (
     GOTO PATH_ERROR

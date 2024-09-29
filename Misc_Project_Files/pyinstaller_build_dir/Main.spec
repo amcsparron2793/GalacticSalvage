@@ -4,11 +4,13 @@
 block_cipher = None
 
 
-a = Analysis(['..\\..\\python_files\\Main.py'],
+a = Analysis(['..\\..\\GalacticSalvage\\GalacticSalvage.py'],
              pathex=['C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\Misc_Project_Files\\pyinstaller_build_dir',
-             'C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\python_files'],
+             'C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\GalacticSalvage'],
              binaries=[],
-             datas=[],
+             datas=['C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\Misc_Project_Files\\images\\*',
+             'C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\Misc_Project_Files\\sounds\\*',
+              'C:\\Users\\amcsparron\\Desktop\\Python_Projects\\GalacticSalvage\\Misc_Project_Files\\CreateTables.sql'],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
