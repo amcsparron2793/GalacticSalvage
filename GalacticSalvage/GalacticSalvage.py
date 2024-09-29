@@ -11,7 +11,16 @@ and use a variety of retro-inspired weapons and upgrades to fend off hostile for
 import pygame
 
 import random
-from GameInitializer import GameInitializer
+
+try:
+    from Bullet import SuperBullet
+    from GameInitializer import GameInitializer
+
+except ImportError:
+    from .Bullet import SuperBullet
+    from .GameInitializer import GameInitializer
+
+
 
 
 class GalacticSalvage(GameInitializer):
