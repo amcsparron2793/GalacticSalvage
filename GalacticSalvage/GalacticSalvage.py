@@ -525,6 +525,30 @@ class _CreateUpdateSprites:
             if pu.rect.bottom >= self.settings.screen.get_height():
                 self.super_bullet_powerups.remove(pu)
 
+    def _update_stars(self):
+        """
+        This method updates the state of all stars in the star field.
+
+        It iterates through each star in the star field and performs the following actions:
+        - Calls the `draw()` method of the star to draw it on the screen.
+        - Calls the `fall()` method of the star to make it fall down.
+        - Calls the `reset_offscreen()` method of the star to reset its position if it goes off the screen.
+
+        After iterating through all stars, it returns the updated list of stars.
+
+        Parameters:
+            None
+
+        Returns:
+            List: The updated list of stars after performing the state update.
+
+        """
+        for star in self.stars:
+            star.draw()
+            star.fall()
+            star.reset_offscreen()
+        return self.stars
+
 
 class GalacticSalvage(_GsInitializer, _HIDChecker, _CollisionChecker, _CreateUpdateSprites):
     """
@@ -616,30 +640,6 @@ class GalacticSalvage(_GsInitializer, _HIDChecker, _CollisionChecker, _CreateUpd
                 new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
             self.sfx_mix.play(self.sounds.blaster)
-
-    def _UpdateStars(self):
-        """
-        This method updates the state of all stars in the star field.
-
-        It iterates through each star in the star field and performs the following actions:
-        - Calls the `draw()` method of the star to draw it on the screen.
-        - Calls the `fall()` method of the star to make it fall down.
-        - Calls the `reset_offscreen()` method of the star to reset its position if it goes off the screen.
-
-        After iterating through all stars, it returns the updated list of stars.
-
-        Parameters:
-            None
-
-        Returns:
-            List: The updated list of stars after performing the state update.
-
-        """
-        for star in self.stars:
-            star.draw()
-            star.fall()
-            star.reset_offscreen()
-        return self.stars
 
     def _check_system_events(self):
         """
@@ -856,7 +856,7 @@ class GalacticSalvage(_GsInitializer, _HIDChecker, _CollisionChecker, _CreateUpd
         self._update_broken_ship()
         self._update_extra_life()
         self._update_super_bullet_pu()
-        self._UpdateStars()
+        self._update_stars()
 
     def run_game(self):
         """
