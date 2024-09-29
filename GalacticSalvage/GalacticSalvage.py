@@ -175,6 +175,30 @@ class HIDEventHandler:
             # reset the game statistics
             self.game_active = True
 
+    # noinspection PyTypeChecker
+    def _fire_bullet(self):
+        """
+        Function _fire_bullet(self) is a private method that is responsible for firing bullets in the game.
+        It checks if the number of bullets currently on the screen is less than the maximum allowed number of bullets set in the game settings.
+        If it is, it checks if the player has the ability to use a superbullet and if they have any superbullets remaining.
+        If both conditions are met, a new SuperBullet object is created and added to the bullets group, and the player's superbullet count is reduced by 1.
+        If the conditions are not met, a new Bullet object is created and added to the bullets group.
+
+        Parameters:
+        - self: The instance of the class that this method belongs to.
+
+        Returns:
+        This method does not return any value.
+        """
+        if len(self.bullets) < self.settings.bullets_allowed:
+            if self.use_superbullet and self.has_superbullet:
+                new_bullet = SuperBullet(self)
+                self.has_superbullet = False
+
+            else:
+                new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+            self.sfx_mix.play(self.sounds.blaster)
 
 # noinspection PyUnresolvedReferences
 class CollisionHandler:
@@ -623,30 +647,7 @@ class GalacticSalvage(GameInitializer, HIDEventHandler, CollisionHandler, _Creat
 
         self.player_name = self.leaderboard.get_player_name()
 
-    # noinspection PyTypeChecker
-    def _fire_bullet(self):
-        """
-        Function _fire_bullet(self) is a private method that is responsible for firing bullets in the game.
-        It checks if the number of bullets currently on the screen is less than the maximum allowed number of bullets set in the game settings.
-        If it is, it checks if the player has the ability to use a superbullet and if they have any superbullets remaining.
-        If both conditions are met, a new SuperBullet object is created and added to the bullets group, and the player's superbullet count is reduced by 1.
-        If the conditions are not met, a new Bullet object is created and added to the bullets group.
 
-        Parameters:
-        - self: The instance of the class that this method belongs to.
-
-        Returns:
-        This method does not return any value.
-        """
-        if len(self.bullets) < self.settings.bullets_allowed:
-            if self.use_superbullet and self.has_superbullet:
-                new_bullet = SuperBullet(self)
-                self.has_superbullet = False
-
-            else:
-                new_bullet = Bullet(self)
-            self.bullets.add(new_bullet)
-            self.sfx_mix.play(self.sounds.blaster)
 
     def _check_system_events(self):
         """
