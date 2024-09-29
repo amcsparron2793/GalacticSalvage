@@ -38,7 +38,56 @@ except ImportError:
     from Leaderboard import Leaderboard
 
 
-class GalacticSalvage:
+class _GsInitializer:
+    def _sub_initialize(self):
+        self.settings = Settings()
+        self.level = 1
+        self._initialize_bools()
+        self._initialize_sprite_groups()
+        self._initialize_sound()
+        self._initialize_miss_penalties()
+        self._initialize_helper_classes()
+        self._create_asteroids()
+
+    def _initialize_miss_penalties(self):
+        self.missed_ship_penalty = 3
+        self.missed_asteroid_penalty = 1
+        self.player_asteroid_hit_penalty = 5
+
+    def _initialize_helper_classes(self):
+        self.leaderboard = Leaderboard(self)
+        self.play_button = Button(self, "Start")
+        self.player = Player(self)
+        self.scoreboard = Scoreboard(self)
+        self.fps = FPSMon(self)
+
+    def _initialize_bools(self):
+        self.show_leaderboard = False
+        self.use_superbullet = False
+        self.running = True
+        self.game_active = False
+        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+
+    def _initialize_sound(self):
+        self.sounds = Sounds(self)
+        self.sfx_mix = self.sounds.sfx_audio_channel
+        self.music_mixer = self.sounds.music_mixer
+        self.music_mixer.play(-1)
+
+    def _initialize_sprite_groups(self):
+        self.bullets = pygame.sprite.Group()
+        self.persistent_powerups_available = pygame.sprite.Group()
+        # FIXME: just for testing
+        # self.persistent_powerups_available.add(SuperBullet(self))
+
+        self.asteroids = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
+        self.extra_lives = pygame.sprite.Group()
+        self.super_bullet_powerups = pygame.sprite.Group()
+        self.stars: List[Star] = [Star(self) for _ in range(25)]
+
+
+class GalacticSalvage(_GsInitializer):
     """
     Class: GalacticSalvage
 
@@ -99,58 +148,10 @@ class GalacticSalvage:
     def __init__(self):
         # Initialize Pygame
         pygame.init()
-        self.settings = Settings()
-        self.level = 1
 
         self._sub_initialize()
 
-        self.stars: List[Star] = [Star(self) for _ in range(25)]
-
         self.player_name = self.leaderboard.get_player_name()
-        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
-
-    def _sub_initialize(self):
-        self._initialize_helper_classes()
-        self._initialize_bools()
-        self._initialize_sprite_groups()
-        self._initialize_sound()
-        self._initialize_miss_penalties()
-        self._create_asteroids()
-
-    def _initialize_miss_penalties(self):
-        self.missed_ship_penalty = 3
-        self.missed_asteroid_penalty = 1
-        self.player_asteroid_hit_penalty = 5
-
-    def _initialize_helper_classes(self):
-        self.leaderboard = Leaderboard(self)
-        self.play_button = Button(self, "Start")
-        self.player = Player(self)
-        self.scoreboard = Scoreboard(self)
-        self.fps = FPSMon(self)
-
-    def _initialize_bools(self):
-        self.show_leaderboard = False
-        self.use_superbullet = False
-        self.running = True
-        self.game_active = False
-
-    def _initialize_sound(self):
-        self.sounds = Sounds(self)
-        self.sfx_mix = self.sounds.sfx_audio_channel
-        self.music_mixer = self.sounds.music_mixer
-        self.music_mixer.play(-1)
-
-    def _initialize_sprite_groups(self):
-        self.bullets = pygame.sprite.Group()
-        self.persistent_powerups_available = pygame.sprite.Group()
-        # FIXME: just for testing
-        # self.persistent_powerups_available.add(SuperBullet(self))
-
-        self.asteroids = pygame.sprite.Group()
-        self.broken_ships = pygame.sprite.Group()
-        self.extra_lives = pygame.sprite.Group()
-        self.super_bullet_powerups = pygame.sprite.Group()
 
     def _check_keydown_events(self, event):
         """
