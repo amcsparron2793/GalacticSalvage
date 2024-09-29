@@ -64,6 +64,21 @@ class Bullet(Sprite):
         draw.rect(self.screen, self.color, self.rect)
 
 class SuperBullet(Bullet):
+    """
+        A class that represents a special type of Bullet object.
+
+        This class extends the Bullet class and adds additional functionality for a super bullet.
+
+        Attributes:
+            gs_game (GameSettings): The game settings object.
+
+        Properties:
+            rect (Rect): The rectangular collision area of the bullet.
+            y (float): The y-coordinate of the bullet's position.
+
+        Methods:
+            __init__(self, gs_game): Initializes a new instance of the SuperBullet class.
+    """
     def __init__(self, gs_game):
         super().__init__(gs_game)
         self.rect = Rect(0, 0, self.settings.bullet_width * self.settings.screen_width, self.settings.bullet_height)

@@ -302,6 +302,7 @@ class CollisionHandler:
         self._check_extra_life_ship_collisions()
         self._check_super_bullet_pu_ship_collisions()
 
+
 # noinspection PyUnresolvedReferences
 class _CreateUpdateSprites:
     def _update_bullets(self):

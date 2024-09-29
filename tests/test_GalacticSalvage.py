@@ -86,8 +86,8 @@ class GalacticSalvageTest(unittest.TestCase):
             self.gs._update_extra_life()
             mock_method.assert_called_with()
 
-    def test_UpdateStars(self):
-        with patch.object(self.gs, '_UpdateStars') as mock_method:
+    def test_update_stars(self):
+        with patch.object(self.gs, '_update_stars') as mock_method:
             self.gs._update_stars()
             mock_method.assert_called_with()
 

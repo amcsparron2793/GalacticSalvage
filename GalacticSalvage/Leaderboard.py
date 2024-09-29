@@ -8,6 +8,29 @@ from typing import List
 
 
 class InputBox:
+    """
+    InputBox Class
+
+    A class that represents an input box for text entry.
+
+    Attributes:
+        ACTIVE_COLOR (tuple): The RGB color value for the active input box.
+        INACTIVE_COLOR (tuple): The RGB color value for the inactive input box.
+        INITIAL_COLOR (tuple): The initial RGB color value for the input box.
+        TEXT_COLOR (tuple): The RGB color value for the text in the input box.
+        WIDTH_INCREMENT (int): The increment value for the width of the input box.
+        MIN_WIDTH (int): The minimum width value for the input box.
+
+    Methods:
+        __init__(self, x, y, w, h, font_size=74, text='')
+            Initializes a new instance of the InputBox class.
+        handle_event(self, event)
+            Handles events related to the input box, such as mouse button down and key press.
+        update(self)
+            Updates the width of the input box based on the text inside.
+        draw(self, screen)
+            Draws the input box and its text onto the screen.
+    """
     ACTIVE_COLOR = (255, 255, 255)
     INACTIVE_COLOR = (200, 200, 200)
     INITIAL_COLOR = (255, 255, 255)
@@ -46,6 +69,25 @@ class InputBox:
         draw.rect(screen, self.box_color, self.rect, 2)
 
 class Leaderboard:
+    """
+    The Leaderboard class is responsible for managing the leaderboard functionality in the game.
+
+    Attributes:
+    - BACKGROUND_COLOR: A tuple representing the RGB values of the background color.
+    - INSTRUCTIONS_COLOR: A tuple representing the RGB values of the instruction text color.
+
+    Methods:
+    - __init__(self, gs_game): Initializes the Leaderboard object.
+    - leaderboard(self) -> List[dict]: Retrieves the full leaderboard from the database.
+    - top_ten_leaderboard(self): Retrieves the top ten entries from the leaderboard.
+    - current_highscore(self) -> int: Retrieves the current highscore from the leaderboard.
+    - _get_player_id(self, player_name): Retrieves the player ID from the database based on the player name.
+    - _make_new_player(self, player_name): Inserts a new player into the database.
+    - add_entry(self, player_name: str): Adds a new entry to the leaderboard for the given player.
+    - get_player_name(self): Retrieves the player's name from the user through a graphical interface.
+    - get_final_leaderboard_strings(self): Retrieves a list of formatted strings representing the final leaderboard.
+    - console_display_leaderboard(self): Prints the leaderboard in a formatted manner.
+    """
     BACKGROUND_COLOR = (0, 0, 0)
     INSTRUCTIONS_COLOR = (255, 255, 255)
     def __init__(self, gs_game):
@@ -59,6 +101,16 @@ class Leaderboard:
 
     @property
     def leaderboard(self) -> List[dict]:
+        """
+        This property returns the leaderboard information as a list of dictionaries.
+
+        Returns:
+            List[dict]: A list containing the leaderboard information.
+
+        Usage:
+
+            leaderboard_data = object_name.leaderboard
+        """
         q_str = f"""select * from FullLeaderboard"""
         self.sql.Query(q_str)
         self._leaderboard = self.sql.list_dict_results
@@ -66,6 +118,18 @@ class Leaderboard:
 
     @property
     def top_ten_leaderboard(self):
+        """
+        The `top_ten_leaderboard` property retrieves the top ten leaderboard data from the database.
+
+        Returns:
+            A list of dictionaries containing the top ten leaderboard data.
+
+        Note:
+            This property executes a SQL query to fetch the leaderboard data from the
+            `TopTenLeaderboard` table in the database.
+            The retrieved data is stored in the `_top_ten_leaderboard` attribute and then returned.
+
+        """
         q_str = f"""select * 
                     from TopTenLeaderboard"""
         self.sql.Query(q_str)
@@ -74,12 +138,32 @@ class Leaderboard:
 
     @property
     def current_highscore(self) -> int:
+        """
+        Retrieves the current highscore from the Leaderboard table.
+
+        Returns:
+            int: The highest score found in the Leaderboard table. If no score is found, returns 0.
+        """
         q_str = f"""select max(score) from Leaderboard"""
         self.sql.Query(q_str)
         self._current_highscore = self.sql.query_results[0][0] or 0
         return self._current_highscore
 
     def _get_player_id(self, player_name):
+        """
+        This private method _get_player_id retrieves the unique ID of a player from the database based on their name.
+        If no player with the given name is found in the database,
+        a new player is created first and then the ID is retrieved. The method returns the player ID.
+
+        Parameters:
+        - player_name (str): The name of the player.
+
+        Returns:
+        - player_id (int): The unique ID of the player.
+
+        Example usage:
+            player_id = _get_player_id('John Doe')
+        """
         q_str = f"""select id from Players where lower(player_name) = '{player_name}' """
         self.sql.Query(q_str)
         if len(self.sql.query_results) <= 0:
@@ -88,11 +172,43 @@ class Leaderboard:
         return self.sql.query_results[0][0]
 
     def _make_new_player(self, player_name):
+        """
+        This method is used to create a new player in the database.
+
+        Parameters:
+        - player_name (str): The name of the new player.
+
+        Returns:
+        None
+
+        Raises:
+        None
+
+        Example:
+        _make_new_player('John Doe')
+        """
         q_str = f"""insert into Players(player_name) values('{player_name}')"""
         self.sql.Query(q_str)
         self.cxn.commit()
 
     def add_entry(self, player_name: str):
+        """
+        This method is used to add an entry to the leaderboard.
+        It takes a player name as a parameter and inserts a new record into the Leaderboard table in the database.
+
+        Parameters:
+        - player_name (str): The name of the player to add to the leaderboard.
+
+        Returns:
+        - None
+
+        Raises:
+        - None
+
+        Examples:
+        - To add a player entry to the leaderboard:
+            add_entry("John Doe")
+        """
         player_name = player_name.lower()
         score = self.game.scoreboard.score
         level = self.game.level
@@ -103,6 +219,16 @@ class Leaderboard:
         self.cxn.commit()
 
     def get_player_name(self):
+        """
+        Get Player Name
+
+        This method is used to get the name of the player.
+        It shows an input box on the screen where the player can enter their name.
+
+        Returns:
+            str: The name of the player entered in the input box.
+
+        """
         player_name_input_width = 140
         player_name_input_height = 50
         center_x = self.settings.screen.get_rect().center[0]
@@ -149,6 +275,12 @@ class Leaderboard:
         return player_name
 
     def get_final_leaderboard_strings(self):
+        """
+        This method is used to generate the leaderboard strings for display purposes.
+
+        Returns:
+            A list of strings representing the leaderboard information.
+        """
         # TODO: fix the design of the scoreboard itself
         final_strings = []
         # assuming top_ten_leaderboard holds the top 10 players' names and scores
@@ -161,7 +293,16 @@ class Leaderboard:
 
     def console_display_leaderboard(self):
         """
-        Prints the leaderboard in a formatted manner.
+        This method displays the leaderboard in the console.
+
+        The leaderboard is printed in a formatted manner using a set of dashes to separate each entry.
+        The entries are obtained from the `get_final_leaderboard_strings` method.
+
+        Example usage:
+        ```
+        leaderboard = Leaderboard()
+        leaderboard.console_display_leaderboard()
+        ```
         """
         print("Leaderboard:")
         print("----------------------------")
