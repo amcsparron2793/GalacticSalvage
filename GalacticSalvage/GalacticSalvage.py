@@ -243,7 +243,8 @@ class GalacticSalvage:
 
     def _update_bullets(self):
         """
-        This function updates the positions of the bullets and removes any bullets that have disappeared. It also checks for collisions between bullets and asteroids.
+        This function updates the positions of the bullets and removes any bullets that have disappeared.
+        It also checks for collisions between bullets and asteroids.
 
         Parameters:
             - None
