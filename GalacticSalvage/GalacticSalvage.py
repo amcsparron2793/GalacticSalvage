@@ -114,7 +114,7 @@ class GalacticSalvage:
         self.bullets = pygame.sprite.Group()
         self.persistent_powerups_available = pygame.sprite.Group()
         # FIXME: just for testing
-        self.persistent_powerups_available.add(SuperBullet(self))
+        # self.persistent_powerups_available.add(SuperBullet(self))
 
         self.has_superbullet = any([isinstance(x, SuperBullet) for x in self.persistent_powerups_available])
         self.asteroids = pygame.sprite.Group()
@@ -127,7 +127,7 @@ class GalacticSalvage:
         self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
-        self.mix = self.sounds.mx
+        self.mix = self.sounds.sfx_audio_channel
         self._create_asteroids()
 
         self.missed_ship_penalty = 3
