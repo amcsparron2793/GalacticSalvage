@@ -101,35 +101,20 @@ class GalacticSalvage:
         pygame.init()
         self.settings = Settings()
         self.leaderboard = Leaderboard(self)
-        self.show_leaderboard = False
-
-        self.use_superbullet = False
         self.level = 1
 
-        self.running = True
-        self.game_active = False
+        self._initialize_bools()
+
         self.play_button = Button(self, "Start")
         self.player = Player(self)
 
-        self.bullets = pygame.sprite.Group()
-        self.persistent_powerups_available = pygame.sprite.Group()
-        # FIXME: just for testing
-        # self.persistent_powerups_available.add(SuperBullet(self))
-
-        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
-        self.asteroids = pygame.sprite.Group()
-        self.broken_ships = pygame.sprite.Group()
-        self.extra_lives = pygame.sprite.Group()
-        self.super_bullet_powerups = pygame.sprite.Group()
+        self._initialize_sprite_groups()
 
         self.stars: List[Star] = [Star(self) for _ in range(25)]
         self.scoreboard = Scoreboard(self)
         self.fps = FPSMon(self)
 
-        self.sounds = Sounds(self)
-        self.sfx_mix = self.sounds.sfx_audio_channel
-        self.music_mixer = self.sounds.music_mixer
-        self.music_mixer.play(-1)
+        self._initialize_sound()
 
         self._create_asteroids()
 
@@ -137,6 +122,30 @@ class GalacticSalvage:
         self.missed_asteroid_penalty = 1
         self.player_asteroid_hit_penalty = 5
         self.player_name = self.leaderboard.get_player_name()
+        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+
+    def _initialize_bools(self):
+        self.show_leaderboard = False
+        self.use_superbullet = False
+        self.running = True
+        self.game_active = False
+
+    def _initialize_sound(self):
+        self.sounds = Sounds(self)
+        self.sfx_mix = self.sounds.sfx_audio_channel
+        self.music_mixer = self.sounds.music_mixer
+        self.music_mixer.play(-1)
+
+    def _initialize_sprite_groups(self):
+        self.bullets = pygame.sprite.Group()
+        self.persistent_powerups_available = pygame.sprite.Group()
+        # FIXME: just for testing
+        # self.persistent_powerups_available.add(SuperBullet(self))
+
+        self.asteroids = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
+        self.extra_lives = pygame.sprite.Group()
+        self.super_bullet_powerups = pygame.sprite.Group()
 
     def _check_keydown_events(self, event):
         """
