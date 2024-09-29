@@ -39,56 +39,6 @@ except ImportError:
 
 
 # noinspection PyUnresolvedReferences
-class GameInitializer:
-    def _initialize_game(self):
-        self.settings = Settings()
-        self.level = 1
-        self._initialize_sprite_groups()
-        self._initialize_bools()
-        self._initialize_sound()
-        self._initialize_miss_penalties()
-        self._initialize_helper_classes()
-        self._create_asteroids()
-
-    def _initialize_miss_penalties(self):
-        self.missed_ship_penalty = 3
-        self.missed_asteroid_penalty = 1
-        self.player_asteroid_hit_penalty = 5
-
-    def _initialize_helper_classes(self):
-        self.leaderboard = Leaderboard(self)
-        self.play_button = Button(self, "Start")
-        self.player = Player(self)
-        self.scoreboard = Scoreboard(self)
-        self.fps = FPSMon(self)
-
-    def _initialize_bools(self):
-        self.show_leaderboard = False
-        self.use_superbullet = False
-        self.running = True
-        self.game_active = False
-        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
-
-    def _initialize_sound(self):
-        self.sounds = Sounds(self)
-        self.sfx_mix = self.sounds.sfx_audio_channel
-        self.music_mixer = self.sounds.music_mixer
-        self.music_mixer.play(-1)
-
-    def _initialize_sprite_groups(self):
-        self.bullets = pygame.sprite.Group()
-        self.persistent_powerups_available = pygame.sprite.Group()
-        # FIXME: just for testing
-        # self.persistent_powerups_available.add(SuperBullet(self))
-
-        self.asteroids = pygame.sprite.Group()
-        self.broken_ships = pygame.sprite.Group()
-        self.extra_lives = pygame.sprite.Group()
-        self.super_bullet_powerups = pygame.sprite.Group()
-        self.stars: List[Star] = [Star(self) for _ in range(25)]
-
-
-# noinspection PyUnresolvedReferences
 class HIDEventHandler:
     def _check_keydown_events(self, event):
         """
@@ -199,6 +149,7 @@ class HIDEventHandler:
                 new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
             self.sfx_mix.play(self.sounds.blaster)
+
 
 # noinspection PyUnresolvedReferences
 class CollisionHandler:
@@ -350,7 +301,6 @@ class CollisionHandler:
         self._check_broken_ship_ship_collisions()
         self._check_extra_life_ship_collisions()
         self._check_super_bullet_pu_ship_collisions()
-
 
 # noinspection PyUnresolvedReferences
 class _CreateUpdateSprites:
@@ -581,7 +531,57 @@ class _CreateUpdateSprites:
         return self.stars
 
 
-class GalacticSalvage(GameInitializer, HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
+# noinspection PyUnresolvedReferences
+class GameInitializer(HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
+    def _initialize_game(self):
+        self.settings = Settings()
+        self.level = 1
+        self._initialize_sprite_groups()
+        self._initialize_bools()
+        self._initialize_sound()
+        self._initialize_miss_penalties()
+        self._initialize_helper_classes()
+        self._create_asteroids()
+
+    def _initialize_miss_penalties(self):
+        self.missed_ship_penalty = 3
+        self.missed_asteroid_penalty = 1
+        self.player_asteroid_hit_penalty = 5
+
+    def _initialize_helper_classes(self):
+        self.leaderboard = Leaderboard(self)
+        self.play_button = Button(self, "Start")
+        self.player = Player(self)
+        self.scoreboard = Scoreboard(self)
+        self.fps = FPSMon(self)
+
+    def _initialize_bools(self):
+        self.show_leaderboard = False
+        self.use_superbullet = False
+        self.running = True
+        self.game_active = False
+        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+
+    def _initialize_sound(self):
+        self.sounds = Sounds(self)
+        self.sfx_mix = self.sounds.sfx_audio_channel
+        self.music_mixer = self.sounds.music_mixer
+        self.music_mixer.play(-1)
+
+    def _initialize_sprite_groups(self):
+        self.bullets = pygame.sprite.Group()
+        self.persistent_powerups_available = pygame.sprite.Group()
+        # FIXME: just for testing
+        # self.persistent_powerups_available.add(SuperBullet(self))
+
+        self.asteroids = pygame.sprite.Group()
+        self.broken_ships = pygame.sprite.Group()
+        self.extra_lives = pygame.sprite.Group()
+        self.super_bullet_powerups = pygame.sprite.Group()
+        self.stars: List[Star] = [Star(self) for _ in range(25)]
+
+
+class GalacticSalvage(GameInitializer):
     """
     Class: GalacticSalvage
 
