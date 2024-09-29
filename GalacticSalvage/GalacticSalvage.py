@@ -39,8 +39,8 @@ except ImportError:
 
 
 # noinspection PyUnresolvedReferences
-class _GsInitializer:
-    def _sub_initialize(self):
+class GameInitializer:
+    def _initialize_game(self):
         self.settings = Settings()
         self.level = 1
         self._initialize_sprite_groups()
@@ -87,8 +87,9 @@ class _GsInitializer:
         self.super_bullet_powerups = pygame.sprite.Group()
         self.stars: List[Star] = [Star(self) for _ in range(25)]
 
+
 # noinspection PyUnresolvedReferences
-class _HIDChecker:
+class HIDEventHandler:
     def _check_keydown_events(self, event):
         """
         This method is responsible for handling keydown events in the game.
@@ -121,8 +122,7 @@ class _HIDChecker:
                 self.running = False
                 self.show_leaderboard = False
 
-        elif (event.key == pygame.K_LCTRL and self.game_active is True
-              and self.has_superbullet):
+        elif self._is_superbullet_enabled(event):
             self.sfx_mix.play(self.sounds.saved_broken_ship)
             self.use_superbullet = True
 
@@ -134,6 +134,11 @@ class _HIDChecker:
             self.settings.ToggleFullscreen()
         elif event.key == pygame.K_m:
             self.sounds.toggle_mute()
+
+    def _is_superbullet_enabled(self, event):
+        return (event.key == pygame.K_LCTRL
+                and self.game_active
+                and self.has_superbullet)
 
     def _check_keyup_events(self, event):
         """
@@ -170,8 +175,9 @@ class _HIDChecker:
             # reset the game statistics
             self.game_active = True
 
+
 # noinspection PyUnresolvedReferences
-class _CollisionChecker:
+class CollisionHandler:
     def _check_bullet_asteroid_collisions(self):
         """
         Checks for any collisions between bullets and asteroids, and handles the consequences if a collision occurs.
@@ -320,6 +326,7 @@ class _CollisionChecker:
         self._check_broken_ship_ship_collisions()
         self._check_extra_life_ship_collisions()
         self._check_super_bullet_pu_ship_collisions()
+
 
 # noinspection PyUnresolvedReferences
 class _CreateUpdateSprites:
@@ -550,7 +557,7 @@ class _CreateUpdateSprites:
         return self.stars
 
 
-class GalacticSalvage(_GsInitializer, _HIDChecker, _CollisionChecker, _CreateUpdateSprites):
+class GalacticSalvage(GameInitializer, HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
     """
     Class: GalacticSalvage
 
@@ -604,15 +611,15 @@ class GalacticSalvage(_GsInitializer, _HIDChecker, _CollisionChecker, _CreateUpd
     """
     clock = pygame.time.Clock()
     RANDOM_EVENT_ODDS_MAX = {'broken_ship': 2000,
-                         'extra_life': 4000,
-                         'asteroid': 100,
-                         'super_bullet_pu': 3500}
+                             'extra_life': 4000,
+                             'asteroid': 100,
+                             'super_bullet_pu': 3500}
 
     def __init__(self):
         # Initialize Pygame
         pygame.init()
 
-        self._sub_initialize()
+        self._initialize_game()
 
         self.player_name = self.leaderboard.get_player_name()
 
