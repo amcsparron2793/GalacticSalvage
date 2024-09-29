@@ -100,29 +100,34 @@ class GalacticSalvage:
         # Initialize Pygame
         pygame.init()
         self.settings = Settings()
-        self.leaderboard = Leaderboard(self)
         self.level = 1
 
-        self._initialize_bools()
-
-        self.play_button = Button(self, "Start")
-        self.player = Player(self)
-
-        self._initialize_sprite_groups()
+        self._sub_initialize()
 
         self.stars: List[Star] = [Star(self) for _ in range(25)]
-        self.scoreboard = Scoreboard(self)
-        self.fps = FPSMon(self)
 
+        self.player_name = self.leaderboard.get_player_name()
+        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+
+    def _sub_initialize(self):
+        self._initialize_helper_classes()
+        self._initialize_bools()
+        self._initialize_sprite_groups()
         self._initialize_sound()
-
+        self._initialize_miss_penalties()
         self._create_asteroids()
 
+    def _initialize_miss_penalties(self):
         self.missed_ship_penalty = 3
         self.missed_asteroid_penalty = 1
         self.player_asteroid_hit_penalty = 5
-        self.player_name = self.leaderboard.get_player_name()
-        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+
+    def _initialize_helper_classes(self):
+        self.leaderboard = Leaderboard(self)
+        self.play_button = Button(self, "Start")
+        self.player = Player(self)
+        self.scoreboard = Scoreboard(self)
+        self.fps = FPSMon(self)
 
     def _initialize_bools(self):
         self.show_leaderboard = False
