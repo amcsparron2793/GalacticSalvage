@@ -280,17 +280,17 @@ class GalacticSalvage:
 
         This method does not return any values.
         """
-        # Check for any bullets that have hit asteroids.
-        # If so, get rid of the bullet and the asteroid.
+
+        was_superbullet_hit = any([isinstance(b, SuperBullet) for b in self.bullets])
+        num_asteroids_on_screen = len(self.asteroids) // 2
+
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.asteroids, True, True)
 
         if collisions:
             for asteroid in collisions.values():
-                # FIXME: THIS WONT WORK UNLESS THE CHECK FOR COLLISIONS IS BEFORE THE DELETION OF THE BULLETS
-                if any([isinstance(b, SuperBullet) for b in self.bullets]):
-                    print(len(self.asteroids))
-                    self.scoreboard.increase_score(len(self.asteroids))
+                if was_superbullet_hit:
+                    self.scoreboard.increase_score(num_asteroids_on_screen)
                 else:
                     self.scoreboard.increase_score(1)
                 self.mix.play(self.sounds.asteroid_boom)
