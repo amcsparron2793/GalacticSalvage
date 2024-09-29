@@ -42,8 +42,8 @@ class _GsInitializer:
     def _sub_initialize(self):
         self.settings = Settings()
         self.level = 1
-        self._initialize_bools()
         self._initialize_sprite_groups()
+        self._initialize_bools()
         self._initialize_sound()
         self._initialize_miss_penalties()
         self._initialize_helper_classes()
@@ -87,72 +87,7 @@ class _GsInitializer:
         self.stars: List[Star] = [Star(self) for _ in range(25)]
 
 
-class GalacticSalvage(_GsInitializer):
-    """
-    Class: GalacticSalvage
-
-    The GalacticSalvage class is responsible for coordinating the gameplay, handling user input, updating game objects, and checking for collisions.
-
-    Attributes:
-    - clock: A Pygame clock object used for controlling the frame rate of the game.
-    - settings: An instance of the Settings class that stores all the game settings.
-    - leaderboard: An instance of the Leaderboard class that manages the leaderboard functionality.
-    - show_leaderboard: A boolean flag indicating whether the leaderboard should be displayed.
-    - use_superbullet: A boolean flag indicating whether the player is using a super bullet power-up.
-    - level: An integer representing the current level.
-    - running: A boolean flag indicating whether the game is running.
-    - game_active: A boolean flag indicating whether the game is currently being played.
-    - play_button: An instance of the Button class representing the play button on the screen.
-    - player: An instance of the Player class representing the player's ship.
-    - bullets: A Pygame sprite group containing all the bullets fired by the player.
-    - persistent_powerups_available: A Pygame sprite group containing all the persistent power-ups available.
-    - has_superbullet: A boolean flag indicating whether the player has a super bullet power-up.
-    - asteroids: A Pygame sprite group containing all the asteroids in the game.
-    - broken_ships: A Pygame sprite group containing all the broken ships in the game.
-    - extra_lives: A Pygame sprite group containing all the extra lives in the game.
-    - super_bullet_powerups: A Pygame sprite group containing all the super bullet power-ups in the game.
-    - stars: A list of Star objects representing the stars in the background.
-    - scoreboard: An instance of the Scoreboard class that keeps track of the player's score.
-    - fps: An instance of the FPSMon class that displays the current frame rate of the game.
-    - sounds: An instance of the Sounds class that manages the game's sound effects.
-    - sfx_mix: The Pygame mixer object used for playing sound effects.
-    - missed_ship_penalty: An integer representing the penalty for missing a ship.
-    - missed_asteroid_penalty: An integer representing the penalty for missing an asteroid.
-    - player_asteroid_hit_penalty: An integer representing the penalty for the player being hit by an asteroid.
-    - player_name: A string representing the name of the player.
-
-    Methods:
-    - __init__(): Initializes the GalacticSalvage object and sets up the initial game state.
-    - _check_keydown_events(event): Handles keyboard key down events and responds accordingly.
-    - _check_keyup_events(event): Handles keyboard key up events and responds accordingly.
-    - _check_play_button(mouse_pos): Checks if the play button was clicked and starts a new game if it was.
-    - _fire_bullet(): Creates a new bullet and adds it to the bullets group.
-    - _update_bullets(): Updates the position of bullets and removes old bullets from the bullets group.
-    - _check_bullet_asteroid_collisions(): Checks for collisions between bullets and asteroids and handles them.
-    - _check_asteroid_ship_collisions(): Checks for collisions between asteroids and the player's ship and handles them.
-    - _check_broken_ship_ship_collisions(): Checks for collisions between broken ships and the player's ship and handles them.
-    - _check_extra_life_ship_collisions(): Checks for collisions between extra lives and the player's ship and handles them.
-    - _check_super_bullet_pu_ship_collisions(): Checks for collisions between super bullet power-ups and the player's ship and handles them.
-    - _create_asteroids(): Creates new asteroids and adds them to the asteroids group.
-    - _update_asteroids(): Updates the position of asteroids and removes off-screen asteroids from the asteroids group.
-    - _create_broken_ship(): Creates a new broken ship and adds it to the broken ships group.
-    - _update_broken_ship(): Updates the position of broken ships and removes off-screen broken ships from the broken ships group.
-
-    """
-    clock = pygame.time.Clock()
-    RANDOM_EVENT_ODDS_MAX = {'broken_ship': 2000,
-                         'extra_life': 4000,
-                         'asteroid': 100,
-                         'super_bullet_pu': 3500}
-
-    def __init__(self):
-        # Initialize Pygame
-        pygame.init()
-
-        self._sub_initialize()
-
-        self.player_name = self.leaderboard.get_player_name()
-
+class _HIDChecker:
     def _check_keydown_events(self, event):
         """
         This method is responsible for handling keydown events in the game.
@@ -233,6 +168,73 @@ class GalacticSalvage(_GsInitializer):
             # reset the game settings
             # reset the game statistics
             self.game_active = True
+
+
+class GalacticSalvage(_GsInitializer, _HIDChecker):
+    """
+    Class: GalacticSalvage
+
+    The GalacticSalvage class is responsible for coordinating the gameplay, handling user input, updating game objects, and checking for collisions.
+
+    Attributes:
+    - clock: A Pygame clock object used for controlling the frame rate of the game.
+    - settings: An instance of the Settings class that stores all the game settings.
+    - leaderboard: An instance of the Leaderboard class that manages the leaderboard functionality.
+    - show_leaderboard: A boolean flag indicating whether the leaderboard should be displayed.
+    - use_superbullet: A boolean flag indicating whether the player is using a super bullet power-up.
+    - level: An integer representing the current level.
+    - running: A boolean flag indicating whether the game is running.
+    - game_active: A boolean flag indicating whether the game is currently being played.
+    - play_button: An instance of the Button class representing the play button on the screen.
+    - player: An instance of the Player class representing the player's ship.
+    - bullets: A Pygame sprite group containing all the bullets fired by the player.
+    - persistent_powerups_available: A Pygame sprite group containing all the persistent power-ups available.
+    - has_superbullet: A boolean flag indicating whether the player has a super bullet power-up.
+    - asteroids: A Pygame sprite group containing all the asteroids in the game.
+    - broken_ships: A Pygame sprite group containing all the broken ships in the game.
+    - extra_lives: A Pygame sprite group containing all the extra lives in the game.
+    - super_bullet_powerups: A Pygame sprite group containing all the super bullet power-ups in the game.
+    - stars: A list of Star objects representing the stars in the background.
+    - scoreboard: An instance of the Scoreboard class that keeps track of the player's score.
+    - fps: An instance of the FPSMon class that displays the current frame rate of the game.
+    - sounds: An instance of the Sounds class that manages the game's sound effects.
+    - sfx_mix: The Pygame mixer object used for playing sound effects.
+    - missed_ship_penalty: An integer representing the penalty for missing a ship.
+    - missed_asteroid_penalty: An integer representing the penalty for missing an asteroid.
+    - player_asteroid_hit_penalty: An integer representing the penalty for the player being hit by an asteroid.
+    - player_name: A string representing the name of the player.
+
+    Methods:
+    - __init__(): Initializes the GalacticSalvage object and sets up the initial game state.
+    - _check_keydown_events(event): Handles keyboard key down events and responds accordingly.
+    - _check_keyup_events(event): Handles keyboard key up events and responds accordingly.
+    - _check_play_button(mouse_pos): Checks if the play button was clicked and starts a new game if it was.
+    - _fire_bullet(): Creates a new bullet and adds it to the bullets group.
+    - _update_bullets(): Updates the position of bullets and removes old bullets from the bullets group.
+    - _check_bullet_asteroid_collisions(): Checks for collisions between bullets and asteroids and handles them.
+    - _check_asteroid_ship_collisions(): Checks for collisions between asteroids and the player's ship and handles them.
+    - _check_broken_ship_ship_collisions(): Checks for collisions between broken ships and the player's ship and handles them.
+    - _check_extra_life_ship_collisions(): Checks for collisions between extra lives and the player's ship and handles them.
+    - _check_super_bullet_pu_ship_collisions(): Checks for collisions between super bullet power-ups and the player's ship and handles them.
+    - _create_asteroids(): Creates new asteroids and adds them to the asteroids group.
+    - _update_asteroids(): Updates the position of asteroids and removes off-screen asteroids from the asteroids group.
+    - _create_broken_ship(): Creates a new broken ship and adds it to the broken ships group.
+    - _update_broken_ship(): Updates the position of broken ships and removes off-screen broken ships from the broken ships group.
+
+    """
+    clock = pygame.time.Clock()
+    RANDOM_EVENT_ODDS_MAX = {'broken_ship': 2000,
+                         'extra_life': 4000,
+                         'asteroid': 100,
+                         'super_bullet_pu': 3500}
+
+    def __init__(self):
+        # Initialize Pygame
+        pygame.init()
+
+        self._sub_initialize()
+
+        self.player_name = self.leaderboard.get_player_name()
 
     # noinspection PyTypeChecker
     def _fire_bullet(self):
