@@ -116,7 +116,7 @@ class GalacticSalvage:
         # FIXME: just for testing
         # self.persistent_powerups_available.add(SuperBullet(self))
 
-        self.has_superbullet = any([isinstance(x, SuperBullet) for x in self.persistent_powerups_available])
+        self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
         self.asteroids = pygame.sprite.Group()
         self.broken_ships = pygame.sprite.Group()
         self.extra_lives = pygame.sprite.Group()
