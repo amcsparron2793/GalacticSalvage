@@ -21,8 +21,6 @@ except ImportError:
     from .GameInitializer import GameInitializer
 
 
-
-
 class GalacticSalvage(GameInitializer):
     """
     Class: GalacticSalvage
