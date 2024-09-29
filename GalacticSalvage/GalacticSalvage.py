@@ -66,7 +66,7 @@ class GalacticSalvage:
     - scoreboard: An instance of the Scoreboard class that keeps track of the player's score.
     - fps: An instance of the FPSMon class that displays the current frame rate of the game.
     - sounds: An instance of the Sounds class that manages the game's sound effects.
-    - mix: The Pygame mixer object used for playing sound effects.
+    - sfx_mix: The Pygame mixer object used for playing sound effects.
     - missed_ship_penalty: An integer representing the penalty for missing a ship.
     - missed_asteroid_penalty: An integer representing the penalty for missing an asteroid.
     - player_asteroid_hit_penalty: An integer representing the penalty for the player being hit by an asteroid.
@@ -127,7 +127,10 @@ class GalacticSalvage:
         self.fps = FPSMon(self)
 
         self.sounds = Sounds(self)
-        self.mix = self.sounds.sfx_audio_channel
+        self.sfx_mix = self.sounds.sfx_audio_channel
+        self.music_mixer = self.sounds.music_mixer
+        self.music_mixer.play(-1)
+
         self._create_asteroids()
 
         self.missed_ship_penalty = 3
@@ -169,7 +172,7 @@ class GalacticSalvage:
 
         elif (event.key == pygame.K_LCTRL and self.game_active is True
               and self.has_superbullet):
-            self.mix.play(self.sounds.saved_broken_ship)
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
             self.use_superbullet = True
 
         elif event.key == pygame.K_SPACE and self.game_active is True:
@@ -239,7 +242,7 @@ class GalacticSalvage:
             else:
                 new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
-            self.mix.play(self.sounds.blaster)
+            self.sfx_mix.play(self.sounds.blaster)
 
     def _update_bullets(self):
         """
@@ -271,10 +274,10 @@ class GalacticSalvage:
 
         If there are any collisions detected, the method iterates over the values of the collisions dictionary (which represents the asteroids hit by bullets). For each asteroid, the following actions are performed:
         - The player's score is increased by 1 using the `increase_score` method of `self.scoreboard`.
-        - The destruction sound effect is played using the `play` method of `self.mix`, with the sound specified as `self.sounds.asteroid_boom`.
+        - The destruction sound effect is played using the `play` method of `self.sfx_mix`, with the sound specified as `self.sounds.asteroid_boom`.
         - The asteroid is removed from the `self.asteroids` sprite group using the `remove` method.
 
-        Note: This method assumes that the `self.scoreboard`, `self.mix`, and `self.sounds` variables have been initialized properly beforehand.
+        Note: This method assumes that the `self.scoreboard`, `self.sfx_mix`, and `self.sounds` variables have been initialized properly beforehand.
 
         This method makes use of the following imported modules:
         - `pygame.sprite`: Used to detect collisions between sprites.
@@ -294,7 +297,7 @@ class GalacticSalvage:
                     self.scoreboard.increase_score(num_asteroids_on_screen)
                 else:
                     self.scoreboard.increase_score(1)
-                self.mix.play(self.sounds.asteroid_boom)
+                self.sfx_mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
 
     def _check_asteroid_ship_collisions(self):
@@ -327,7 +330,7 @@ class GalacticSalvage:
             else:
                 self.scoreboard.score = 0
 
-            self.mix.play(self.sounds.player_boom)
+            self.sfx_mix.play(self.sounds.player_boom)
 
             if self.player.player_lives > 0:
                 self.player.player_lives -= 1
@@ -337,11 +340,11 @@ class GalacticSalvage:
                 self.player.biltme()
                 # print(f"score is: {self.scoreboard.score}\n asteroids remaining: {len(self.asteroids)}")
             else:
-                self.mix.play(self.sounds.player_boom)
-                while self.mix.get_busy():
+                self.sfx_mix.play(self.sounds.player_boom)
+                while self.sfx_mix.get_busy():
                     pass
-                self.mix.play(self.sounds.game_over)
-                while self.mix.get_busy():
+                self.sfx_mix.play(self.sounds.game_over)
+                while self.sfx_mix.get_busy():
                     pass
                 self.running = False
 
@@ -358,7 +361,7 @@ class GalacticSalvage:
         if collisions:
             self.scoreboard.increase_score(10)
             self.broken_ships.remove(collisions)
-            self.mix.play(self.sounds.saved_broken_ship)
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
 
     def _check_extra_life_ship_collisions(self):
         """
@@ -374,7 +377,7 @@ class GalacticSalvage:
         if collisions:
             self.player.player_lives += 1
             self.extra_lives.remove(collisions)
-            self.mix.play(self.sounds.saved_broken_ship)
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
 
     def _check_super_bullet_pu_ship_collisions(self):
         """
@@ -388,7 +391,7 @@ class GalacticSalvage:
         - The `self.super_bullet_powerups` attribute holds a group of super bullet powerup sprites.
         - The `self.persistent_powerups_available` attribute holds a group of persistent powerup sprites.
         - The `SuperBullet` class is used to create a new super bullet powerup sprite.
-        - The `self.mix` object is used to play a sound effect when a collision occurs.
+        - The `self.sfx_mix` object is used to play a sound effect when a collision occurs.
         - The `self.sounds.saved_broken_ship` attribute holds the sound effect for a saved broken ship.
 
         Parameters:
@@ -404,7 +407,7 @@ class GalacticSalvage:
         if collisions:
             self.super_bullet_powerups.remove(collisions)
             self.persistent_powerups_available.add(SuperBullet(self))
-            self.mix.play(self.sounds.saved_broken_ship)
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
 
     # noinspection PyTypeChecker
     def _create_asteroids(self):
@@ -450,7 +453,7 @@ class GalacticSalvage:
             # Remove asteroids that go off-screen
             if asteroid.rect.bottom >= self.settings.screen.get_height():
                 self.asteroids.remove(asteroid)
-                self.mix.play(self.sounds.missed_asteroid)
+                self.sfx_mix.play(self.sounds.missed_asteroid)
                 self.scoreboard.decrease_score(self.missed_asteroid_penalty)
                 self._create_asteroids()
 
@@ -494,7 +497,7 @@ class GalacticSalvage:
         3. Checks if the bottom of the ship's rectangle is greater than or equal to the height of the screen. If it is, it means the ship has gone off-screen.
         4. If the ship has gone off-screen, it is removed from the `broken_ships` group.
         5. Decreases the score on the `scoreboard` instance by the `missed_ship_penalty` amount using the `decrease_score()` method.
-        6. Plays the `missed_asteroid` sound effect using the `play()` method of the `mix` instance.
+        6. Plays the `missed_asteroid` sound effect using the `play()` method of the `sfx_mix` instance.
 
         Note that this method modifies the `broken_ships` group, the `scoreboard` instance, and the audio output.
 
@@ -509,7 +512,7 @@ class GalacticSalvage:
             if ship.rect.bottom >= self.settings.screen.get_height():
                 self.broken_ships.remove(ship)
                 self.scoreboard.decrease_score(self.missed_ship_penalty)
-                self.mix.play(self.sounds.missed_asteroid)
+                self.sfx_mix.play(self.sounds.missed_asteroid)
 
     def _create_extra_life(self):
         """
@@ -759,7 +762,7 @@ class GalacticSalvage:
         If the score is greater than or equal to the threshold value, the level is incremented by 1, and
         the scoreboard's level property is updated with the new level value.
         Additionally, a "LEVEL UP" message is printed to the console along with the new level number.
-        Finally, a sound effect is played using the mix object's play method.
+        Finally, a sound effect is played using the sfx_mix object's play method.
 
         Returns:
             None
@@ -771,7 +774,7 @@ class GalacticSalvage:
             self.level += 1
             self.scoreboard.level = self.level
             print(f"LEVEL UP - Level {self.level}")
-            self.mix.play(self.sounds.level_up)
+            self.sfx_mix.play(self.sounds.level_up)
 
     def _display_leaderboard(self):
         """

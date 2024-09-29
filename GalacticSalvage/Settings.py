@@ -108,7 +108,11 @@ class Settings:
             self.config.get('SCOREBOARD', 'fps_counter_color'))
         self.show_fps = self.config.getboolean('DEFAULT', 'show_fps')
 
+        self.sfx_volume = self.config.getfloat('DEFAULT', 'sfx_volume') / 100
+        self.music_volume = self.config.getfloat('DEFAULT', 'music_volume') / 100
+
         self.sound_muted = self.config.getboolean('DEFAULT', 'sound_muted')
+
         self.leaderboard_db_location = self.config.get('LEADERBOARD', 'database_file_path')
 
     @staticmethod

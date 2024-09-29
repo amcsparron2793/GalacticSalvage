@@ -45,6 +45,8 @@ class GsConfig(BetterConfig):
                         'windowed_mode': 'True',
                         'screen_width': 800,
                         'screen_height': 600,
+                        'sfx_volume': 100,
+                        'music_volume': 100,
                         'sound_muted': 'False',
                         'bg_color': ColorConverter.rgb_to_hex((0, 0, 0)),
                         'show_fps': 'False'

@@ -18,14 +18,15 @@ class Sounds:
         self.settings = gs_game.settings
         self._configure_music()
         self._load_sound_effects()
-        self.sfx_audio_channel = mixer.find_channel()
         self.mute_image = transform.scale_by(image.load(self.MUTE_IMAGE_PATH), self.MUTE_IMAGE_SCALE)
 
         if self.settings.sound_muted:
             self._mute()
         else:
             self._unmute()
-        self.music_mixer.play(-1)
+
+        self.sfx_audio_channel.set_volume(self.settings.sfx_volume)
+        self.music_mixer.set_volume(self.settings.music_volume)
 
     @property
     def is_muted(self):
@@ -36,6 +37,7 @@ class Sounds:
         self.music_mixer.load(self.BACKGROUND_MUSIC_PATH)
 
     def _load_sound_effects(self):
+        self.sfx_audio_channel = mixer.find_channel()
         self.blaster = mixer.Sound(self.BLASTER_SOUND_PATH)
         self.player_boom = mixer.Sound(self.PLAYER_BOOM_SOUND_PATH)
         self.missed_asteroid = mixer.Sound(self.MISSED_ASTEROID_SOUND_PATH)
@@ -55,8 +57,8 @@ class Sounds:
         self.music_mixer.set_volume(0)
 
     def _unmute(self):
-        self.sfx_audio_channel.set_volume(100)
-        self.music_mixer.set_volume(100)
+        self.sfx_audio_channel.set_volume(self.settings.sfx_volume)
+        self.music_mixer.set_volume(self.settings.music_volume)
 
     def draw_mute_img(self, screen):
         mute_rect = self.mute_image.get_rect()
