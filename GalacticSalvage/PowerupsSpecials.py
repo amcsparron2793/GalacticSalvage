@@ -1,142 +1,68 @@
 from pathlib import Path
 
 from pygame.sprite import Sprite
-from pygame import image, transform, font, Rect
+from pygame import image, transform, font
 from random import randint
 
-# TODO: generalize these more... see Superbullets subclassing of BrokenShip/ExtraLife
-
-class ExtraLife(Sprite):
+class _BasePowerUpClass(Sprite):
     """
-    This is the documentation for the ExtraLife class.
+    This module contains the implementation of the `_BasePowerUpClass` class,
+    which is a base class for power-up sprites in the game.
 
-    class ExtraLife(Sprite):
-        def __init__(self, gs_game):
-            Initializes a new instance of the ExtraLife class.
+    Classes:
+        - `_BasePowerUpClass`
 
-            Parameters:
-            - gs_game (object): An instance of the GameSettings class.
+    Attributes:
+        - `SPRITE_IMAGE_PATH`: Path to the image file of the power-up sprite. (Type: `Path`)
+        - `SCALE_FACTOR`: The scale factor to apply to the power-up sprite. (Type: `float`)
+        - `POWERUP_TEXT`: The text to display alongside the power-up sprite. (Type: `str`)
 
-        @staticmethod
-        def _load_img_scale_and_rotate(img_path):
-            Loads an image from the given path, scales and rotates it.
-
-            Parameters:
-            - img_path (str): The path to the image file.
-
-            Returns:
-            - image_surface (Surface): The scaled and rotated image.
-
-        def update(self):
-            Updates the location of the ExtraLife object.
-
-        Parameters: None
-
-        def draw(self, screen):
-            Draws the ExtraLife object on the screen.
-
-            Parameters:
-            - screen (Surface): The screen surface to draw on.
+    Methods:
+        - `__init__(self, gs_game)`: Initializes a new instance of the `_BasePowerUpClass` class.
+        - `_set_img_rect_and_speed(self)`: Sets the image rectangle and speed for the power-up sprite.
+        - `_load_img_scale_and_rotate(self)`: Loads, scales, and rotates the power-up sprite image.
+        - `update(self)`: Updates the location of the power-up sprite.
+        - `draw(self, screen)`: Draws the power-up sprite on the screen.
+        - `_render_and_draw_text(self, screen)`: Renders and draws the text alongside the power-up sprite.
     """
-
-    EXTRALIFE_IMAGE_PATH = Path('../Misc_Project_Files/images/1UP.png')
+    SPRITE_IMAGE_PATH:Path = None
+    SCALE_FACTOR:float = 1.0
+    POWERUP_TEXT = None
 
     def __init__(self, gs_game):
         super().__init__()
         self.settings = gs_game.settings
         self.player = gs_game.player
-        self.image = self._load_img_scale_and_rotate(self.EXTRALIFE_IMAGE_PATH)
+        self.image = self._load_img_scale_and_rotate()
+        self._set_img_rect_and_speed()
+
+        # noinspection PyTypeChecker
+        self.text:str = self.POWERUP_TEXT
+        self.font = font.Font(None, 24)
+
+    def _set_img_rect_and_speed(self):
         self.rect = self.image.get_rect()
         self.rect.x = randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
         self.speed = randint(1, 8)
 
-    @staticmethod
-    def _load_img_scale_and_rotate(img_path):
-        image_surface = image.load(img_path).convert_alpha()
-        scaled_image = transform.scale_by(image_surface, 0.15)
-        rotated_image = transform.rotate(scaled_image, randint(1, 360))  # the 1UPs are randomly rotated
-        return rotated_image
+    def _load_img_scale_and_rotate(self):
+        return transform.rotate(
+            transform.scale_by(
+                image.load(self.SPRITE_IMAGE_PATH).convert_alpha(),
+                self.SCALE_FACTOR,
+            ), randint(1, 360)
+        )
 
     def update(self):
         # update LOCATION
         self.rect.y += self.speed
 
     def draw(self, screen):
-        # Draw the life
+        # Draw the sprite
         screen.blit(self.image, self.rect)
-
-
-class BrokenShip(Sprite):
-    """
-        This class represents a broken ship in a game. It is a subclass of the `Sprite` class.
-
-        Attributes:
-            settings (Settings): An instance of the `Settings` class that stores game settings.
-            image (Surface): The image of the broken ship.
-            rect (Rect): The rectangular area occupied by the broken ship.
-            speed (int): The speed at which the broken ship moves.
-            text (str): The text to be displayed alongside the broken ship.
-            font (Font): The font used to render the text.
-
-        Methods:
-            __init__(self, gs_game): Initializes a new instance of the `BrokenShip` class.
-            _load_img_scale_and_rotate(img_path): Loads, scales, and rotates the image of the broken ship.
-            update(self): Updates the location of the broken ship.
-            draw(self, screen): Draws the broken ship on the screen along with the associated text.
-
-    """
-
-    BROKENSHIP_IMAGE_PATH = Path('../Misc_Project_Files/images/OtherShip.png')
-
-    def __init__(self, gs_game):
-        super().__init__()
-        self.settings = gs_game.settings
-        self.image = self._load_img_scale_and_rotate(self.BROKENSHIP_IMAGE_PATH)
-        self.rect = self.image.get_rect()
-        self.rect.x = randint(0, self.settings.screen_width - self.rect.width)
-        self.rect.y = -self.settings.screen_height - self.rect.height  # Start above the screen
-        self.speed = randint(1, 8)
-
-        self.text = "Repair needed! Catch me!"
-        self.font = font.Font(None, 24)  # Use a default font with size 24
-
-    @staticmethod
-    def _load_img_scale_and_rotate(img_path):
-        image_surface = image.load(img_path).convert_alpha()
-        scaled_image = transform.scale_by(image_surface, 0.05)
-        rotated_image = transform.rotate(scaled_image, randint(1, 360))  # the ships are randomly rotated
-        return rotated_image
-
-    def update(self):
-        # update LOCATION
-        self.rect.y += self.speed
-
-    def draw(self, screen):
-        # Draw the ship
-        screen.blit(self.image, self.rect)
-
-        # Render and draw the text
-        text_surface = self.font.render(self.text, True, self.settings.WHITE)  # Render text in white
-        text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 5))  # Position below the ship
-        screen.blit(text_surface, text_rect)
-
-
-class SuperBulletPowerUp(ExtraLife):
-    SUPERBULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
-    def __init__(self, gs_game):
-        super().__init__(gs_game)
-        self.gs_game = gs_game
-        self.image = self.sb_load_img_scale_and_rotate(self.SUPERBULLET_IMAGE_PATH)
-        self.text = "SUPER BULLET!"
-        self.font = font.Font(None, 24)  # Use a default font with size 24
-
-    @staticmethod
-    def sb_load_img_scale_and_rotate(img_path):
-        image_surface = image.load(img_path).convert_alpha()
-        scaled_image = transform.scale_by(image_surface, 1)
-        rotated_image = transform.rotate(scaled_image, randint(1, 360))  # the ships are randomly rotated
-        return rotated_image
+        if self.POWERUP_TEXT:
+            self._render_and_draw_text(screen)
 
     def _render_and_draw_text(self, screen):
         # Render and draw the text
@@ -144,9 +70,56 @@ class SuperBulletPowerUp(ExtraLife):
         text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 5))  # Position below the ship
         screen.blit(text_surface, text_rect)
 
-    def draw(self, screen):
-        # Draw the powerup
-        screen.blit(self.image, self.rect)
-        self._render_and_draw_text(screen)
+
+class ExtraLife(_BasePowerUpClass):
+    """
+    The `ExtraLife` class is a subclass of `_BasePowerUpClass` and represents a power-up that gives the player an extra life.
+
+    Attributes:
+        EXTRALIFE_IMAGE_PATH (Path): The path to the image file for the extra life power-up.
+        SPRITE_IMAGE_PATH (Path): The path to the image file for the sprite.
+        SCALE_FACTOR (float): The scaling factor for the sprite image.
+
+    """
+
+    EXTRALIFE_IMAGE_PATH = Path('../Misc_Project_Files/images/1UP.png')
+    SPRITE_IMAGE_PATH = EXTRALIFE_IMAGE_PATH
+    SCALE_FACTOR:float = 0.15
 
 
+class BrokenShip(_BasePowerUpClass):
+    """
+    This module contains the code for the BrokenShip class, a subclass of the _BasePowerUpClass.
+
+    Attributes:
+        BROKENSHIP_IMAGE_PATH (Path): The path to the image file for the BrokenShip sprite.
+        SPRITE_IMAGE_PATH (Path): The path to the image file for the BrokenShip sprite.
+        SCALE_FACTOR (float): The scale factor for the BrokenShip sprite.
+        POWERUP_TEXT (str): The text displayed when the BrokenShip power-up is activated.
+
+    Classes:
+        BrokenShip (_BasePowerUpClass): A class representing a broken ship power-up.
+
+    """
+
+    BROKENSHIP_IMAGE_PATH = Path('../Misc_Project_Files/images/OtherShip.png')
+    SPRITE_IMAGE_PATH = BROKENSHIP_IMAGE_PATH
+    SCALE_FACTOR:float = 0.05
+    POWERUP_TEXT = "Repair needed! Catch me!"
+
+
+class SuperBulletPowerUp(_BasePowerUpClass):
+    """
+    This module contains the `SuperBulletPowerUp` class which is a subclass of the `_BasePowerUpClass`.
+
+        class SuperBulletPowerUp(_BasePowerUpClass):
+
+    Attributes:
+        SUPERBULLET_IMAGE_PATH (Path): The path to the image file for the super bullet power-up.
+        SPRITE_IMAGE_PATH (Path): The path to the image file used for the sprite.
+        POWERUP_TEXT (str): The text that represents the super bullet power-up.
+
+    """
+    SUPERBULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
+    SPRITE_IMAGE_PATH = SUPERBULLET_IMAGE_PATH
+    POWERUP_TEXT = "SUPER BULLET!"
