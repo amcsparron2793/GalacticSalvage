@@ -70,7 +70,7 @@ class _HIDEventHandler:
             self.use_superbullet = False
 
         elif event.key == pygame.K_F12:
-            self.settings.ToggleFullscreen()
+            self.settings.toggle_fullscreen()
         elif event.key == pygame.K_m:
             self.sounds.toggle_mute()
 
