@@ -18,11 +18,12 @@ class Scoreboard:
     """
     PLAYER_LIVES_IMAGE_PATH = Path('../Misc_Project_Files/images/PlayerShipNoBackground.png')
     SUPER_BULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
+    UNLIMITED_BULLETS_IMAGE_PATH = Path('../Misc_Project_Files/images/UnlimitedBullets.png')
     SCORE_TEXT_LOCATION_TUPLE = (10, 10)
     LIFE_TEXT_LOCATION_TUPLE = (1, 65)
     LIFE_IMAGE_LOCATION_TUPLE = (1, 75)
     POWERUP_TEXT_LOCATION_TUPLE = (1, 125)
-    SUPER_BULLET_LOCATION_TUPLE = (1, 135)
+    FIRST_POWERUP_LOCATION_TUPLE = (1, 135)
 
 
 
@@ -40,6 +41,7 @@ class Scoreboard:
         self.player_lives_image = image.load(self.PLAYER_LIVES_IMAGE_PATH)
         self.player_lives_image = transform.scale_by(self.player_lives_image, 0.05)
         self.super_bullet_image = image.load(self.SUPER_BULLET_IMAGE_PATH)
+        self.unlimited_bullets_image = image.load(self.UNLIMITED_BULLETS_IMAGE_PATH)
 
     def increase_score(self, amount=1):
         self.score += amount
@@ -79,15 +81,15 @@ class Scoreboard:
         return life_text, life_text_rect, life_text_location, life_img_rect, life_img_location
 
     def _powerup_img_prep(self):
-        superbullet_img_location = self.SUPER_BULLET_LOCATION_TUPLE
+        first_powerup_img_location = self.FIRST_POWERUP_LOCATION_TUPLE
         superbullet_img_rect = self.super_bullet_image.get_rect()
         powerup_text = self.font.render("PowerUps: ", True, self.color)
         powerup_text_rect = powerup_text.get_rect()
         powerup_text_location = self.POWERUP_TEXT_LOCATION_TUPLE
 
-        superbullet_img_rect.x, superbullet_img_rect.y = superbullet_img_location
+        superbullet_img_rect.x, superbullet_img_rect.y = first_powerup_img_location
         powerup_text_rect.x, powerup_text_rect.y = powerup_text_location
-        return powerup_text, powerup_text_rect, powerup_text_location, superbullet_img_rect, superbullet_img_location
+        return powerup_text, powerup_text_rect, powerup_text_location, superbullet_img_rect, first_powerup_img_location
 
     def _render_extra_lives(self, screen, life_img_rect):
         for x in range(1, self.player.player_lives + 1):
@@ -101,26 +103,31 @@ class Scoreboard:
                              (life_img_rect.y + 15)))
 
     def _render_powerups(self, screen, powerup_img_rect):
-        # TODO generalize this, go through each powerup in self.persistent_powerups_available and render it
-        for x in range(1, len(self.persistent_powerups_available) + 1):
-            if x != 1:
-                screen.blit(self.super_bullet_image,
-                            ((powerup_img_rect.x + (self.super_bullet_image.get_width() * x)),
-                             (powerup_img_rect.y + 15)))
-            else:
-                screen.blit(self.super_bullet_image,
-                            ((powerup_img_rect.x + (self.super_bullet_image.get_width() * x)),
-                             (powerup_img_rect.y + 15)))
+        def _bilt_powerup(image, position):
+            screen.blit(image, position)
+        # FIXME: change y? if there is already a different icon there
+        for index, powerup in enumerate(self.persistent_powerups_available, start=1):
+            if powerup.__class__.__name__ == 'SuperBullet':
+                pu_img = self.super_bullet_image
+            elif powerup.__class__.__name__ == 'UnlimitedBulletsPowerUp':
+                pu_img = self.unlimited_bullets_image
+            position = (powerup_img_rect.x + (int(pu_img.get_width()) * index),
+                        powerup_img_rect.y + 15)
+            _bilt_powerup(pu_img, position)
+            # else:
+            # screen.blit(self.super_bullet_image,
+            #             ((powerup_img_rect.x + (self.super_bullet_image.get_width() * index)),
+            #              (powerup_img_rect.y + 15)))
 
     def display(self, screen):
         score_text, score_text_rect, score_text_location = self._score_text_prep()
         life_text, life_text_rect, life_text_location, life_img_rect, life_img_location = self._life_img_prep()
         (powerup_text, powerup_text_rect, powerup_text_location,
-         superbullet_img_rect, superbullet_img_location) = self._powerup_img_prep()
+         powerup_sprite_img_rect, powerup_sprite_img_location) = self._powerup_img_prep()
 
         # render
         self._render_extra_lives(screen, life_img_rect)
-        self._render_powerups(screen, superbullet_img_rect)
+        self._render_powerups(screen, powerup_sprite_img_rect)
         # render everything else
         screen.blit(score_text, score_text_rect)
         screen.blit(life_text, life_text_rect)

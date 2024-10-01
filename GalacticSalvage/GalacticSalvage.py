@@ -82,7 +82,7 @@ class GalacticSalvage(GameInitializer):
                              'extra_life': 4000,
                              'asteroid': 100,
                              'super_bullet_pu': 3500,
-                             'unlimited_bullets_pu': 300}
+                             'unlimited_bullets_pu': 3500}
 
     def __init__(self):
         # Initialize Pygame
