@@ -123,3 +123,9 @@ class SuperBulletPowerUp(_BasePowerUpClass):
     SUPERBULLET_IMAGE_PATH = Path('../Misc_Project_Files/images/SuperBullet.png')
     SPRITE_IMAGE_PATH = SUPERBULLET_IMAGE_PATH
     POWERUP_TEXT = "SUPER BULLET!"
+
+
+class UnlimitedBulletsPowerUp(_BasePowerUpClass):
+    UNLIMITED_BULLETS_IMAGE_PATH = Path('../Misc_Project_Files/images/UnlimitedBullets.png')
+    SPRITE_IMAGE_PATH = UNLIMITED_BULLETS_IMAGE_PATH
+    POWERUP_TEXT = "Unlimited Bullets!"

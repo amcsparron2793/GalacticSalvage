@@ -12,11 +12,15 @@ import pygame
 
 import random
 
+
+
 try:
+    from PowerupsSpecials import UnlimitedBulletsPowerUp
     from Bullet import SuperBullet
     from GameInitializer import GameInitializer
 
 except ImportError:
+    from .PowerupsSpecials import UnlimitedBulletsPowerUp
     from .Bullet import SuperBullet
     from .GameInitializer import GameInitializer
 
@@ -77,7 +81,8 @@ class GalacticSalvage(GameInitializer):
     RANDOM_EVENT_ODDS_MAX = {'broken_ship': 2000,
                              'extra_life': 4000,
                              'asteroid': 100,
-                             'super_bullet_pu': 3500}
+                             'super_bullet_pu': 3500,
+                             'unlimited_bullets_pu': 300}
 
     def __init__(self):
         # Initialize Pygame
@@ -136,6 +141,8 @@ class GalacticSalvage(GameInitializer):
             self._create_asteroids()
         if random.randint(1, self.RANDOM_EVENT_ODDS_MAX['super_bullet_pu']) == 1:
             self._create_super_bullet_pu()
+        if random.randint(1, self.RANDOM_EVENT_ODDS_MAX['unlimited_bullets_pu']) == 1:
+            self._create_unlimited_bullet_pu()
 
     def _draw_sprites(self):
         """
@@ -161,6 +168,8 @@ class GalacticSalvage(GameInitializer):
             bullet.draw_bullet()
         for star in self.stars:
             star.draw()
+        for unl_bullet in self.unlimited_bullets_powerups.sprites():
+            unl_bullet.draw(self.settings.screen)
         self.asteroids.draw(self.settings.screen)
 
     def _check_saved_powerups(self):
@@ -183,6 +192,10 @@ class GalacticSalvage(GameInitializer):
             if not self.has_superbullet:
                 # TODO: if any new powerups are added then they need to be checked here
                 if isinstance(powerup, SuperBullet):
+                    self.persistent_powerups_available.remove(powerup)
+            # FIXME: WHY DOESNT UNLIMITED BULLET RENDER????
+            if not self.has_unlimited_bullet:
+                if isinstance(powerup, UnlimitedBulletsPowerUp):
                     self.persistent_powerups_available.remove(powerup)
 
     def _update_screen(self):
@@ -300,6 +313,7 @@ class GalacticSalvage(GameInitializer):
         self._update_broken_ship()
         self._update_extra_life()
         self._update_super_bullet_pu()
+        self._update_unlimited_bullet_pu()
         self._update_stars()
 
     def run_game(self):

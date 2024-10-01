@@ -11,7 +11,7 @@ try:
     from .Settings import Settings
     from .Sound import Sounds
     from .Button import Button
-    from .PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp
+    from .PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp, UnlimitedBulletsPowerUp
     from .Leaderboard import Leaderboard
 
 except ImportError:
@@ -23,7 +23,7 @@ except ImportError:
     from Settings import Settings
     from Sound import Sounds
     from Button import Button
-    from PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp
+    from PowerupsSpecials import BrokenShip, ExtraLife, SuperBulletPowerUp, UnlimitedBulletsPowerUp
     from Leaderboard import Leaderboard
 
 
@@ -277,7 +277,7 @@ class CollisionHandler:
             None
         """
         # Check for any extra lives that have hit the ship.
-        # If so, get rid of the extra life sprite and add an extra life.
+        # If so, get rid of the sprite and add the powerup.
         collisions = pygame.sprite.spritecollideany(self.player, self.super_bullet_powerups)
 
         if collisions:
@@ -285,11 +285,44 @@ class CollisionHandler:
             self.persistent_powerups_available.add(SuperBullet(self))
             self.sfx_mix.play(self.sounds.saved_broken_ship)
 
+    def _check_unlimited_bullets_pu_ship_collisions(self):
+        """
+        Checks for collisions between the player ship and unlimited_bullets powerups.
+
+        If there is a collision, the super bullet powerup sprite is removed and an extra life is added to the game.
+
+        Note:
+        - This method relies on the `pygame.sprite.spritecollideany()` function to check for collisions.
+        - The `self.player` attribute refers to the player ship sprite.
+        - The `self.unlimited_bullets` attribute holds a group of super bullet powerup sprites.
+        - The `self.persistent_powerups_available` attribute holds a group of persistent powerup sprites.
+        - The `UnlimitedBullets` class is used to create a new unlimited bullets powerup sprite.
+        - The `self.sfx_mix` object is used to play a sound effect when a collision occurs.
+        - The `self.sounds.saved_broken_ship` attribute holds the sound effect for a saved broken ship.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        # Check for any extra lives that have hit the ship.
+        # If so, get rid of the sprite and add the powerup.
+        collisions = pygame.sprite.spritecollideany(self.player, self.unlimited_bullets_powerups)
+        print(self.unlimited_bullets_powerups)
+
+        if collisions:
+            self.unlimited_bullets_powerups.remove(collisions)
+            self.persistent_powerups_available.add(UnlimitedBulletsPowerUp(self))
+            # self.persistent_powerups_available.add(UnlimitedBulletsPowerUp(self))
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
+
     def _check_all_collisions(self):
         self._check_asteroid_ship_collisions()
         self._check_broken_ship_ship_collisions()
         self._check_extra_life_ship_collisions()
         self._check_super_bullet_pu_ship_collisions()
+        self._check_unlimited_bullets_pu_ship_collisions()
 
 
 # noinspection PyUnresolvedReferences
@@ -496,6 +529,40 @@ class _CreateUpdateSprites:
             if pu.rect.bottom >= self.settings.screen.get_height():
                 self.super_bullet_powerups.remove(pu)
 
+    def _create_unlimited_bullet_pu(self):
+        """
+        Creates an Unlimited Bullet Power Up.
+
+        This method is responsible for creating an Unlimited Bullet Power Up object and adding it
+         to the 'unlimited_bullet_powerups' set.
+         After creating the Unlimited Bullet Power Up, the 'has_unlimited' attribute is set to True.
+
+        Parameters:
+            self (object): The current instance of the class.
+
+        Returns:
+            None
+        """
+
+        self.unlimited_bullets_powerups.add(UnlimitedBulletsPowerUp(self))
+        self.has_unlimited_bullet = True
+
+    def _update_unlimited_bullet_pu(self):
+        """
+        Updates the position of the super bullet power-ups and removes any that have reached the bottom of the screen.
+
+        Parameters:
+            - None
+
+        Returns:
+            - None
+        """
+        self.unlimited_bullets_powerups.update()
+        for pu in self.unlimited_bullets_powerups.copy():
+            if pu.rect.bottom >= self.settings.screen.get_height():
+                self.unlimited_bullets_powerups.remove(pu)
+
+
     def _update_stars(self):
         """
         This method updates the state of all stars in the star field.
@@ -550,6 +617,7 @@ class GameInitializer(_HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
         self.running = True
         self.game_active = False
         self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
+        self.has_unlimited_bullet = any((isinstance(x, UnlimitedBulletsPowerUp) for x in self.persistent_powerups_available))
 
     def _initialize_sound(self):
         self.sounds = Sounds(self)
@@ -567,4 +635,5 @@ class GameInitializer(_HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
         self.broken_ships = pygame.sprite.Group()
         self.extra_lives = pygame.sprite.Group()
         self.super_bullet_powerups = pygame.sprite.Group()
+        self.unlimited_bullets_powerups = pygame.sprite.Group()
         self.stars: List[Star] = [Star(self) for _ in range(25)]
