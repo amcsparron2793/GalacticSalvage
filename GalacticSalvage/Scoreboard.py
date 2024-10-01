@@ -106,6 +106,7 @@ class Scoreboard:
         def _bilt_powerup(image, position):
             screen.blit(image, position)
         # FIXME: change y? if there is already a different icon there
+        # TODO: add in if alt pressed HID keypress logic for unlimited_bullets
         for index, powerup in enumerate(self.persistent_powerups_available, start=1):
             if powerup.__class__.__name__ == 'SuperBullet':
                 pu_img = self.super_bullet_image
