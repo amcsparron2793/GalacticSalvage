@@ -193,7 +193,6 @@ class GalacticSalvage(GameInitializer):
                 # TODO: if any new powerups are added then they need to be checked here
                 if isinstance(powerup, SuperBullet):
                     self.persistent_powerups_available.remove(powerup)
-            # FIXME: WHY DOESNT UNLIMITED BULLET RENDER????
             if not self.has_unlimited_bullet:
                 if isinstance(powerup, UnlimitedBulletsPowerUp):
                     self.persistent_powerups_available.remove(powerup)

@@ -38,10 +38,9 @@ class Scoreboard:
                                  self.settings.scoreboard_font_size)
         self.color = self.settings.scoreboard_font_color
 
-        self.player_lives_image = image.load(self.PLAYER_LIVES_IMAGE_PATH)
-        self.player_lives_image = transform.scale_by(self.player_lives_image, 0.05)
+        self.player_lives_image = transform.scale_by(image.load(self.PLAYER_LIVES_IMAGE_PATH), 0.05)
         self.super_bullet_image = image.load(self.SUPER_BULLET_IMAGE_PATH)
-        self.unlimited_bullets_image = image.load(self.UNLIMITED_BULLETS_IMAGE_PATH)
+        self.unlimited_bullets_image = transform.scale_by(image.load(self.UNLIMITED_BULLETS_IMAGE_PATH),0.75)
 
     def increase_score(self, amount=1):
         self.score += amount
@@ -106,7 +105,6 @@ class Scoreboard:
     def _render_powerups(self, screen, powerup_img_rect):
         def _bilt_powerup(image, position):
             screen.blit(image, position)
-        # FIXME: change y? if there is already a different icon there
         # TODO: add in if alt pressed HID keypress logic for unlimited_bullets
         for index, powerup in enumerate(self.persistent_powerups_available, start=1):
             if powerup.__class__.__name__ == 'SuperBullet':

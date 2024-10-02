@@ -128,4 +128,4 @@ class SuperBulletPowerUp(_BasePowerUpClass):
 class UnlimitedBulletsPowerUp(_BasePowerUpClass):
     UNLIMITED_BULLETS_IMAGE_PATH = Path('../Misc_Project_Files/images/UnlimitedBullets.png')
     SPRITE_IMAGE_PATH = UNLIMITED_BULLETS_IMAGE_PATH
-    POWERUP_TEXT = "Unlimited Bullets!"
+    POWERUP_TEXT = "Unlimited Bullets!".upper()

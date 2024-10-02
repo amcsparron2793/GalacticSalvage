@@ -142,6 +142,10 @@ class _HIDEventHandler:
 
 # noinspection PyUnresolvedReferences
 class CollisionHandler:
+    def _add_powerup_to_scoreboard(self, powerup):
+        if not any([isinstance(x, powerup) for x in self.persistent_powerups_available]):
+            self.persistent_powerups_available.add(powerup(self))
+
     def _check_bullet_asteroid_collisions(self):
         """
         Checks for any collisions between bullets and asteroids, and handles the consequences if a collision occurs.
@@ -282,7 +286,7 @@ class CollisionHandler:
 
         if collisions:
             self.super_bullet_powerups.remove(collisions)
-            self.persistent_powerups_available.add(SuperBullet(self))
+            self._add_powerup_to_scoreboard(SuperBullet)
             self.sfx_mix.play(self.sounds.saved_broken_ship)
 
     def _check_unlimited_bullets_pu_ship_collisions(self):
@@ -309,12 +313,10 @@ class CollisionHandler:
         # Check for any extra lives that have hit the ship.
         # If so, get rid of the sprite and add the powerup.
         collisions = pygame.sprite.spritecollideany(self.player, self.unlimited_bullets_powerups)
-        print(self.unlimited_bullets_powerups)
 
         if collisions:
             self.unlimited_bullets_powerups.remove(collisions)
-            self.persistent_powerups_available.add(UnlimitedBulletsPowerUp(self))
-            # self.persistent_powerups_available.add(UnlimitedBulletsPowerUp(self))
+            self._add_powerup_to_scoreboard(UnlimitedBulletsPowerUp)
             self.sfx_mix.play(self.sounds.saved_broken_ship)
 
     def _check_all_collisions(self):
