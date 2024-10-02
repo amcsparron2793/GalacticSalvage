@@ -22,7 +22,7 @@ class Scoreboard:
     SCORE_TEXT_LOCATION_TUPLE = (10, 10)
     LIFE_TEXT_LOCATION_TUPLE = (1, 65)
     LIFE_IMAGE_LOCATION_TUPLE = (1, 75)
-    POWERUP_TEXT_LOCATION_TUPLE = (1, 125)
+    POWERUP_TITLE_TEXT_LOCATION_TUPLE = (1, 125)
     FIRST_POWERUP_LOCATION_TUPLE = (1, 135)
 
 
@@ -82,14 +82,15 @@ class Scoreboard:
 
     def _powerup_img_prep(self):
         first_powerup_img_location = self.FIRST_POWERUP_LOCATION_TUPLE
-        superbullet_img_rect = self.super_bullet_image.get_rect()
+        powerup_img_rect = self.super_bullet_image.get_rect()
         powerup_text = self.font.render("PowerUps: ", True, self.color)
         powerup_text_rect = powerup_text.get_rect()
-        powerup_text_location = self.POWERUP_TEXT_LOCATION_TUPLE
+        powerup_text_location = self.POWERUP_TITLE_TEXT_LOCATION_TUPLE
 
-        superbullet_img_rect.x, superbullet_img_rect.y = first_powerup_img_location
+        powerup_img_rect.x, powerup_img_rect.y = first_powerup_img_location
         powerup_text_rect.x, powerup_text_rect.y = powerup_text_location
-        return powerup_text, powerup_text_rect, powerup_text_location, superbullet_img_rect, first_powerup_img_location
+
+        return powerup_text, powerup_text_rect, powerup_text_location, powerup_img_rect, first_powerup_img_location
 
     def _render_extra_lives(self, screen, life_img_rect):
         for x in range(1, self.player.player_lives + 1):
