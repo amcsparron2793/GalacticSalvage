@@ -1,6 +1,9 @@
+from datetime import timedelta
+from datetime import datetime
 import pygame
 from typing import List
 import random
+
 
 try:
     from .Player import Player
@@ -60,6 +63,9 @@ class _HIDEventHandler:
             if event.key == pygame.K_q and not self.game_active:
                 self.running = False
                 self.show_leaderboard = False
+        elif self._is_unlimited_bullets_enabled(event):
+            self.sfx_mix.play(self.sounds.saved_broken_ship)
+            self.use_unlimited_bullets = True
 
         elif self._is_superbullet_enabled(event):
             self.sfx_mix.play(self.sounds.saved_broken_ship)
@@ -73,6 +79,11 @@ class _HIDEventHandler:
             self.settings.toggle_fullscreen()
         elif event.key == pygame.K_m:
             self.sounds.toggle_mute()
+
+    def _is_unlimited_bullets_enabled(self, event):
+        return (event.key == pygame.K_RCTRL
+                and self.game_active
+                and self.has_unlimited_bullet)
 
     def _is_superbullet_enabled(self, event):
         return (event.key == pygame.K_LCTRL
@@ -130,9 +141,23 @@ class _HIDEventHandler:
         This method does not return any value.
         """
         if len(self.bullets) < self.settings.bullets_allowed:
+            if self.unlimited_bullet_start_time:
+                ub_timer = timedelta(seconds=datetime.now().timestamp() - self.unlimited_bullet_start_time)
+                if ub_timer >= self.unlimited_bullets_timer_limit:
+                    self.settings.bullets_allowed = 3
+                    self.use_unlimited_bullets = False
+                    self.has_unlimited_bullet = False
+                    self.unlimited_bullet_start_time = None
+
+
             if self.use_superbullet and self.has_superbullet:
                 new_bullet = SuperBullet(self)
                 self.has_superbullet = False
+            elif self.use_unlimited_bullets and self.has_unlimited_bullet:
+                if not self.unlimited_bullet_start_time:
+                    self.unlimited_bullet_start_time = datetime.now().timestamp()
+                self.settings.bullets_allowed = 9999
+                new_bullet = Bullet(self)
 
             else:
                 new_bullet = Bullet(self)
@@ -594,6 +619,9 @@ class GameInitializer(_HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
     def _initialize_game(self):
         self.settings = Settings()
         self.level = 1
+        self.unlimited_bullet_start_time = None
+        self.unlimited_bullets_timer_limit  = timedelta(seconds=10)
+
         self._initialize_sprite_groups()
         self._initialize_bools()
         self._initialize_sound()
@@ -616,6 +644,7 @@ class GameInitializer(_HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
     def _initialize_bools(self):
         self.show_leaderboard = False
         self.use_superbullet = False
+        self.use_unlimited_bullets = False
         self.running = True
         self.game_active = False
         self.has_superbullet = any((isinstance(x, SuperBullet) for x in self.persistent_powerups_available))
