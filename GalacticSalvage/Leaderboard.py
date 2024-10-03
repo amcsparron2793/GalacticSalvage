@@ -213,7 +213,8 @@ class Leaderboard:
         score = self.game.scoreboard.score
         level = self.game.level
         player_id = self._get_player_id(player_name)
-        q_str = f"""insert into Leaderboard(player_id, score, level) VALUES ({player_id}, {score}, {level})"""
+        acc = self.game.shooting_accuracy
+        q_str = f"""insert into Leaderboard(player_id, score, level, shooting_accuracy) VALUES ({player_id}, {score}, {level}, {acc})"""
         print(q_str)
         self.sql.Query(q_str)
         self.cxn.commit()
@@ -285,9 +286,11 @@ class Leaderboard:
         final_strings = []
         # assuming top_ten_leaderboard holds the top 10 players' names and scores
         leaderboard_info = [x.items() for x in self.top_ten_leaderboard]
-        for rank, (player, date, score, level) in enumerate(leaderboard_info, start=1):
+        for rank, (player, date, score, level, shooting_accuracy) in enumerate(leaderboard_info, start=1):
             final_string = (f"{rank}. {date[0]}: {date[1]} - {player[0]}: {player[1]} "
                             f"- {score[0]}: {score[1]} - {level[0]}: {level[1]}")
+            # TODO: add this and fix centering
+            # - {shooting_accuracy[0]}: {shooting_accuracy[1]}")
             final_strings.append(final_string)
         return final_strings
 

@@ -305,6 +305,11 @@ class GalacticSalvage(GameInitializer):
             # aren't used to render a static image at 10000000000s of FPS
             self.clock.tick(60)
 
+    @property
+    def shooting_accuracy(self):
+        return round((self.total_bullets_hit / self.total_bullets_fired) * 100, 2)
+
+
     def _update_screen_elements(self):
         self.player.update()
         self._update_bullets()
@@ -343,6 +348,7 @@ class GalacticSalvage(GameInitializer):
             self.leaderboard.add_entry(self.player_name)
 
         self.show_leaderboard = True
+        print(self.shooting_accuracy)
         while True:
             self._display_leaderboard()
             self._check_system_events()

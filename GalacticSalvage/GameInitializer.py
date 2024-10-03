@@ -162,6 +162,7 @@ class _HIDEventHandler:
             else:
                 new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            self.total_bullets_fired += 1
             self.sfx_mix.play(self.sounds.blaster)
 
 
@@ -202,12 +203,16 @@ class CollisionHandler:
                     self.scoreboard.increase_score(num_asteroids_on_screen)
                 else:
                     self.scoreboard.increase_score(1)
-                self.sfx_mix.play(self.sounds.asteroid_boom)
+                    self.total_bullets_hit += 1
+                    self.sfx_mix.play(self.sounds.asteroid_boom)
                 self.asteroids.remove(asteroid)
+
 
     def _check_asteroid_ship_collisions(self):
         """
-        This method is responsible for checking if any asteroids have collided with the player's ship. If a collision occurs, the method handles the necessary actions such as updating the scoreboard, decreasing player lives, resetting the ship's position, and playing sound effects.
+        This method is responsible for checking if any asteroids have collided with the player's ship.
+        If a collision occurs, the method handles the necessary actions such as updating the scoreboard,
+        decreasing player lives, resetting the ship's position, and playing sound effects.
 
         Parameters:
             - None
@@ -621,6 +626,8 @@ class GameInitializer(_HIDEventHandler, CollisionHandler, _CreateUpdateSprites):
         self.level = 1
         self.unlimited_bullet_start_time = None
         self.unlimited_bullets_timer_limit  = timedelta(seconds=10)
+        self.total_bullets_fired = 0
+        self.total_bullets_hit = 0
 
         self._initialize_sprite_groups()
         self._initialize_bools()
