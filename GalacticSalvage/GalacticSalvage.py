@@ -92,7 +92,10 @@ class GalacticSalvage(GameInitializer):
 
     @property
     def shooting_accuracy(self):
-        return round((self.total_bullets_hit / self.total_bullets_fired) * 100, 2)
+        try:
+            return round((self.total_bullets_hit / self.total_bullets_fired) * 100, 2)
+        except ZeroDivisionError:
+            return 100.00
 
     def _check_system_events(self):
         """

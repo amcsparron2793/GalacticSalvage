@@ -31,6 +31,7 @@ class Scoreboard:
         self.settings = gs_game.settings
         self.level = gs_game.level
         self.player = gs_game.player
+        self.shooting_accuracy = gs_game.shooting_accuracy
         self.leaderboard = gs_game.leaderboard
         self.persistent_powerups_available = gs_game.persistent_powerups_available
         self.score = 0
@@ -62,7 +63,7 @@ class Scoreboard:
             current_highscore = self.leaderboard.current_highscore
 
         s_text = self.font.render(f"Score: {str(self.score)} Level: {str(self.level)} "
-                                  f"Highscore: {str(current_highscore)}",
+                                  f"Highscore: {str(current_highscore)} acc: {self.shooting_accuracy}",
                                   True, self.color)
         s_text_rect = s_text.get_rect()
         s_text_location = self.SCORE_TEXT_LOCATION_TUPLE
@@ -103,9 +104,10 @@ class Scoreboard:
                              (life_img_rect.y + 15)))
 
     def _render_powerups(self, screen, powerup_img_rect):
+
         def _bilt_powerup(image, position):
             screen.blit(image, position)
-        # TODO: add in if alt pressed HID keypress logic for unlimited_bullets
+
         for index, powerup in enumerate(self.persistent_powerups_available, start=1):
             if powerup.__class__.__name__ == 'SuperBullet':
                 pu_img = self.super_bullet_image
