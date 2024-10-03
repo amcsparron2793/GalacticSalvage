@@ -90,6 +90,10 @@ class GalacticSalvage(GameInitializer):
         self._initialize_game()
         self.player_name = self.leaderboard.get_player_name()
 
+    @property
+    def shooting_accuracy(self):
+        return round((self.total_bullets_hit / self.total_bullets_fired) * 100, 2)
+
     def _check_system_events(self):
         """
         Checks for system events and performs corresponding actions.
@@ -304,11 +308,6 @@ class GalacticSalvage(GameInitializer):
             # Cap the frame rate - this needs to be done so that crazy amounts of system resources
             # aren't used to render a static image at 10000000000s of FPS
             self.clock.tick(60)
-
-    @property
-    def shooting_accuracy(self):
-        return round((self.total_bullets_hit / self.total_bullets_fired) * 100, 2)
-
 
     def _update_screen_elements(self):
         self.player.update()
